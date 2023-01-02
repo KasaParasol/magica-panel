@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div style="position: relative; height: 100%;" id="main">
+        <div id="stack1"></div>
+        <div id="stack2"></div>
+        <div id="sub1">
+            <article id="content1">
+                <h1>Hello, MagicaPanel!!🎉🎉🎉</h1>
+            </article>
+        </div>
+        <div id="sub2">
+            <article id="content2">
+                <h1>MDIな感じのUIライブラリを作ってます。</h1>
+            </article>
+        </div>
+        <div id="sub3">
+            <article id="content3">
+                <h1>(c) @KasaParasol</h1>
+            </article>
+        </div>
+    </div>
+    <script src="dist/main.js"></script>
+    <script>
+        new MagicaPanel.BaseContainer(
+            document.getElementById("main"),
+            {overflowX: 'hidden', overflowY: 'hidden'},
+            new MagicaPanel.StackContainer(
+                document.getElementById("stack1"),
+                {
+                    direction: 'vertical',
+                    template: ['86px', '1fr']
+                },
+                new MagicaPanel.Panel(
+                    document.getElementById("sub1"),
+                    {title: 'sample!'},
+                    document.getElementById('content1')
+                ),
+                new MagicaPanel.StackContainer(
+                    document.getElementById("stack2"),
+                    {direction: 'horizontal'},
+                ),
+            ),
+            new MagicaPanel.Panel(
+                document.getElementById("sub2"),
+                {title: 'sample! (2)'},
+                document.getElementById('content2')
+            ),
+            new MagicaPanel.Panel(
+                document.getElementById("sub3"),
+                {title: 'sample! (3)'},
+                document.getElementById('content3')
+            )
+        );
+    </script>
+</body>
+</html>
