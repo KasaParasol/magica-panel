@@ -187,6 +187,7 @@ const style = `
     overflow-x: hidden;
     overflow-y: hidden;
     position: relative;
+    z-index: 0;
 }
 
 .magica-panel-stack-wrapper.ox-s {
