@@ -1,4 +1,3 @@
-import StackContainer from "./container/stack-container";
 import PanelBase from "./panel-base";
 
 /**
