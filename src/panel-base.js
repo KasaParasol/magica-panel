@@ -198,13 +198,20 @@ export default class PanelBase extends EventTarget
     }
 
     appendChild (val, ref) {
-        if (ref?.nextElementSibling) {
-            this._inner.insertBefore(val.element, ref.nextElementSibling);
+        const next = ref?.nextElementSibling;
+        if (next) {
+            this._inner.insertBefore(val.element, next);
         }
         else {
             this._inner.appendChild(val.element);
         }
-        this._children.push(val);
+        if (next) {
+            const idx = Array.from(this._inner.children).filter(e => e.classList.contains('magica-panel-window')).findIndex(e => e.nextElementSibling === ref);
+            this._children.splice(idx + 1, 0, val);
+        }
+        else {
+            this._children.push(val);
+        }
         val.addEventListener('move', this._childMoveHandler);
         val.addEventListener('moved', this._childMovedHandler);
         this.addEventListener('changeparent', val._changeParentHandler);

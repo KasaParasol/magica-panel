@@ -175,13 +175,32 @@ export default class StackContainer extends PanelBase
     removeChild (val) {
         this.addareas.filter(e => e !== val.element.nextElementSibling.children[0]);
         val.element.nextElementSibling.remove();
+
+        let ranges = this._lastTargetRange;
+        this._lastTargetRange = undefined;
+        const idx = this.children.indexOf(val);
+        if (!ranges[idx - 1] && ranges[idx + 1]) {
+            ranges[idx + 1] += ranges[idx] + this.opts.separatorWidth;
+        }
+        else if (!ranges[idx + 1] && ranges[idx - 1]) {
+            ranges[idx - 1] += ranges[idx] + this.opts.separatorWidth;
+        }
+        else if (ranges[idx + 1] && ranges[idx - 1]) {
+            const [smallIdx, largeIdx] = ranges[idx - 1] > ranges[idx + 1]? [idx + 1, idx - 1]: [idx - 1, idx + 1];
+            const ratio = ranges[smallIdx] / ranges[largeIdx];
+            const smallSize = Math.round((ranges[idx] + this.opts.separatorWidth) / 2 * ratio);
+            ranges[smallIdx] += smallSize;
+            ranges[largeIdx] += (ranges[idx] + this.opts.separatorWidth) - smallSize;
+        }
+        ranges = ranges.filter((_e, i) => i !== idx).map(e => `${e}px`);
+
         super.removeChild(val);
         if (this.inner.children.length === 1) {
             this.addareas.filter(e => e !== this.inner.children[0].children[0]);
             this.inner.children[0].remove();
             this.element.classList.add('empty');
         }
-        this._calcGridSize();
+        this._calcGridSize(undefined, undefined, ranges.length === 0? undefined: ranges);
     }
 
     _calcGridSize (sep, pos, template) {
@@ -238,6 +257,7 @@ export default class StackContainer extends PanelBase
      * 子要素の移動に追従します。
      */
     childMoveHandler (evt) {
+        this._lastTargetRange = this.children.map(e => e.element.getClientRects()[0][this.opts.direction === 'vertical'? 'height': 'width']);
         evt.detail.target.normal();
         evt.detail.target.parent = this.root;
     }
