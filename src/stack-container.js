@@ -135,9 +135,6 @@ export default class StackContainer extends PanelBase
 
         let ranges = this.children.map(e => e.element.getClientRects()[0][this.opts.direction === 'vertical'? 'height': 'width']);
 
-        super.appendChild(val, this._lastref);
-        if (val.maximum) val.maximum();
-
         if (this._lastref) {
             const idx = this.children.map(e => e.element).indexOf(this._lastref.previousElementSibling);
             const insertTargetRange = (ranges[idx] || 0) + (ranges[idx + 1] || 0) / 2;
@@ -157,8 +154,10 @@ export default class StackContainer extends PanelBase
             }
             ranges.splice(idx + 1, 0, insertRange - this.opts.separatorWidth);
         }
-
         ranges = ranges.map(e => `${e}px`);
+
+        super.appendChild(val, this._lastref);
+        if (val.maximum) val.maximum();
 
         const sep = this._generateSeparator();
         this.addareas.push(sep.children[0]);

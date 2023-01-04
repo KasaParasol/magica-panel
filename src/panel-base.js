@@ -206,7 +206,7 @@ export default class PanelBase extends EventTarget
             this._inner.appendChild(val.element);
         }
         if (next) {
-            const idx = Array.from(this._inner.children).filter(e => e.classList.contains('magica-panel-window')).findIndex(e => e.nextElementSibling === ref);
+            const idx = this.children.map(e => e.element).findIndex(e => e.nextElementSibling === ref);
             this._children.splice(idx + 1, 0, val);
         }
         else {
