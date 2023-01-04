@@ -184,8 +184,19 @@ export default class Panel extends PanelBase
         this.element.classList.add('maximum');
     }
 
-    normal () {
+    normal (x) {
+        let ratio = 0;
+        if (x !== undefined) {
+            const rect = this.element.getClientRects()[0];
+            ratio = x / (rect.left + rect.width - this.parent.element.getClientRects()[0].left);
+        }
         this.element.classList.remove('maximum');
+
+        if (x !== undefined) {
+            const w = this.element.getClientRects()[0].width;
+            if (this._clickstart) this._clickstart.x = w * ratio;
+            this.element.style.left = `${Math.round(x - (w * ratio))}px`;
+        }
     }
 
 
