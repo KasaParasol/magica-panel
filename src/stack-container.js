@@ -155,7 +155,7 @@ export default class StackContainer extends PanelBase
             else {
                 ranges[idx] -= insertRange;
             }
-            ranges.splice(idx + 1, 0, insertRange);
+            ranges.splice(idx + 1, 0, insertRange - this.opts.separatorWidth);
         }
 
         ranges = ranges.map(e => `${e}px`);
