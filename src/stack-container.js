@@ -91,6 +91,7 @@ export default class StackContainer extends PanelBase
                     if (rect && rect.top < evt.detail.ev.clientY && evt.detail.ev.clientY < rect.bottom
                     && rect.left < evt.detail.ev.clientX && evt.detail.ev.clientX < rect.right) {
                         this._lastref = this.element.contains(addarea.closest('.magica-panel-stack-inner'))? addarea.parentElement: undefined;
+                        this._lastTargetRange = evt.detail.target.element.getClientRects()[0][this.opts.direction === 'vertical'? 'height': 'width'];
                         evt.detail.target.parent = this;
                     }
                     addarea.classList.remove('hover');
@@ -130,8 +131,34 @@ export default class StackContainer extends PanelBase
             this.inner.appendChild(sep);
         }
 
+        const windowRange = this._lastTargetRange;
+
+        let ranges = this.children.map(e => e.element.getClientRects()[0][this.opts.direction === 'vertical'? 'height': 'width']);
+
         super.appendChild(val, this._lastref);
         if (val.maximum) val.maximum();
+
+        if (this._lastref) {
+            const idx = this.children.map(e => e.element).indexOf(this._lastref.previousElementSibling);
+            const insertTargetRange = (ranges[idx] || 0) + (ranges[idx + 1] || 0) / 2;
+            const insertRange = Math.min(insertTargetRange, windowRange) - this.opts.separatorWidth;
+            if (~idx && ranges[idx + 1]) {
+                const [smallIdx, largeIdx] = ranges[idx] > ranges[idx + 1]? [idx + 1, idx]: [idx, idx + 1];
+                const ratio = ranges[smallIdx] / ranges[largeIdx];
+                const smallSize = Math.round(insertRange / 2 * ratio);
+                ranges[smallIdx] -= smallSize;
+                ranges[largeIdx] -= (insertRange - smallSize);
+            }
+            else if (!~idx) {
+                ranges[idx + 1] -= insertRange;
+            }
+            else {
+                ranges[idx] -= insertRange;
+            }
+            ranges.splice(idx + 1, 0, insertRange);
+        }
+
+        ranges = ranges.map(e => `${e}px`);
 
         const sep = this._generateSeparator();
         this.addareas.push(sep.children[0]);
@@ -142,7 +169,7 @@ export default class StackContainer extends PanelBase
             this.inner.appendChild(sep);
         }
         this.element.classList.remove('empty');
-        this._calcGridSize();
+        this._calcGridSize(undefined, undefined, ranges.length === 0? undefined: ranges);
     }
 
     removeChild (val) {
