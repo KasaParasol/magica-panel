@@ -257,7 +257,7 @@ export default class StackContainer extends PanelBase
      */
     childMoveHandler (evt) {
         this._lastTargetRange = this.children.map(e => e.element.getClientRects()[0][this.opts.direction === 'vertical'? 'height': 'width']);
-        evt.detail.target.normal();
+        evt.detail.target.normal(evt.detail.ev.pageX);
         evt.detail.target.parent = this.root;
     }
 
