@@ -93,6 +93,9 @@ export default class PanelBase extends EventTarget
         this._childNormalizedHandler = (ev) => {
             this.childNormalizedHandler(ev);
         }
+        this._resizeParentHandler = (ev) => {
+            this.resizeParentHandler(ev);
+        }
 
         this._opts = opts;
         this._element = element;
@@ -164,11 +167,11 @@ export default class PanelBase extends EventTarget
     set parent (val) {
         if (this._parent) {
             this._parent.removeChild(this);
-            this._parent.removeEventListener('resize', this.resizeParentHandler);
+            this._parent.removeEventListener('resize', this._resizeParentHandler);
         }
         this._parent = val;
         this._parent.appendChild(this);
-        this._parent.addEventListener('resize', this.resizeParentHandler);
+        this._parent.addEventListener('resize', this._resizeParentHandler);
         this.dispatchEvent(new CustomEvent('changeparent', {detail: {target: this}}));
     }
 
