@@ -1,4 +1,5 @@
 import PanelBase from "./panel-base";
+import BaseContainer from "./base-container";
 
 /**
  * UIを格納するパネルエリア。ウィンドウ表示・ほかパネルへの格納が可能
@@ -160,7 +161,7 @@ export default class Panel extends PanelBase
      * @param { MouseEvent } ev
      */
     _moveTitlebarHandler (ev) {
-        if (this.element.classList.contains('maximum')
+        if ((this.element.classList.contains('maximum') && this.parent instanceof BaseContainer )
         || this.element.classList.contains('minimum')) {
             return;
         }
