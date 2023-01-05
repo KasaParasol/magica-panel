@@ -46,7 +46,7 @@ export default class StackContainer extends PanelBase
 
             const addArea = document.createElement('div');
             addArea.classList.add('magica-panel-stack-add', 'empty');
-            addArea.innerText = '❐';
+            addArea.innerText = this.opts.direction === 'vertical'? '▤': '▥';
             this.addareas.push(addArea);
             this.element.appendChild(addArea);
         }
