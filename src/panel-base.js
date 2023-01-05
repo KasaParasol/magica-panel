@@ -86,6 +86,12 @@ export default class PanelBase extends EventTarget
         this._childMoveHandler = (ev) => {
             this.childMoveHandler(ev);
         };
+        this._childMinimizedHandler = (ev) => {
+            this.childMinimizedHandler(ev);
+        };
+        this._childNormalizedHandler = (ev) => {
+            this.childNormalizedHandler(ev);
+        }
 
         this._opts = opts;
         this._element = element;
@@ -166,7 +172,6 @@ export default class PanelBase extends EventTarget
     }
 
     resizeParentHandler () {
-        throw new Error('impl');
     }
 
     /**
@@ -174,7 +179,6 @@ export default class PanelBase extends EventTarget
      * @param {{rect: DOMRect, ev: DragEvent}} rect
      */
     childMoveHandler (evt) {
-        throw new Error('impl');
     }
 
     /**
@@ -182,7 +186,16 @@ export default class PanelBase extends EventTarget
      * @param {{rect: DOMRect, ev: DragEvent}} rect
      */
     childMovedHandler (evt) {
-        throw new Error('impl');
+    }
+
+    /**
+     * 
+     * @param {{rect: DOMRect, ev: DragEvent}} rect
+     */
+    childMinimizedHandler (evt) {
+    }
+
+    childNormalizedHandler (evt) {
     }
 
     changeParentHandler (evt) {
@@ -194,6 +207,8 @@ export default class PanelBase extends EventTarget
         this._children = this._children.filter(e => e !== val);
         val.removeEventListener('move', this._childMoveHandler);
         val.removeEventListener('remove', this._childMovedHandler);
+        val.removeEventListener('minimized', this._childMinimizedHandler);
+        val.removeEventListener('normalized', this._childNormalizedHandler);
         this.removeEventListener('changeparent', val._changeParentHandler);
     }
 
@@ -214,6 +229,8 @@ export default class PanelBase extends EventTarget
         }
         val.addEventListener('move', this._childMoveHandler);
         val.addEventListener('moved', this._childMovedHandler);
+        val.addEventListener('minimized', this._childMinimizedHandler);
+        val.addEventListener('normalized', this._childNormalizedHandler);
         this.addEventListener('changeparent', val._changeParentHandler);
     }
 

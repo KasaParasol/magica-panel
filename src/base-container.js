@@ -105,4 +105,16 @@ export default class BaseContainer extends PanelBase
     childMovedHandler (evt) {
         this.dispatchEvent(new CustomEvent('childrenmoved', {detail: {...evt.detail, target: evt.target}}));
     }
+
+    childMinimizedHandler (evt) {
+        this.children.filter(e => e.element.classList.contains('minimum')).forEach((value, counter) => {
+            value.element.style.left = `${evt.target.element.getClientRects()[0].width * counter}px`;
+        })
+    }
+
+    childNormalizedHandler (evt) {
+        this.children.filter(e => e.element.classList.contains('minimum')).forEach((value, counter) => {
+            value.element.style.left = `${evt.target.element.getClientRects()[0].width * counter}px`;
+        });
+    }
 }

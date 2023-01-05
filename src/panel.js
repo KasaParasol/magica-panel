@@ -87,7 +87,7 @@ export default class Panel extends PanelBase
             else {
                 this.maximum();
             }
-        })
+        });
         buttonarea.insertBefore(maximumbutton, closebutton);
 
 
@@ -95,6 +95,15 @@ export default class Panel extends PanelBase
         const minimumbutton = document.createElement('button');
         minimumbutton.innerText = '-';
         minimumbutton.classList.add('magica-panel-button');
+        minimumbutton.addEventListener('click', () => {
+            if (this.element.classList.contains('minimum')) {
+                this.normal();
+            }
+            else {
+                this.minimum();
+            }
+        });
+
         buttonarea.insertBefore(minimumbutton, maximumbutton);
     }
 
@@ -181,6 +190,8 @@ export default class Panel extends PanelBase
     }
 
     maximum () {
+        this._left = this.element.getClientRects()[0].left;
+        this.element.classList.remove('minimum');
         this.element.classList.add('maximum');
     }
 
@@ -190,6 +201,8 @@ export default class Panel extends PanelBase
             const rect = this.element.getClientRects()[0];
             ratio = x / (rect.left + rect.width - this.parent.element.getClientRects()[0].left);
         }
+
+        this.element.classList.remove('minimum');
         this.element.classList.remove('maximum');
 
         if (x !== undefined) {
@@ -197,7 +210,16 @@ export default class Panel extends PanelBase
             if (this._clickstart) this._clickstart.x = w * ratio;
             this.element.style.left = `${Math.round(x - (w * ratio))}px`;
         }
+        else if (this._left) {
+            this.element.style.left = `${this._left}px`;
+        }
+        this.dispatchEvent(new CustomEvent('normalized', {detail: {target: this}}));
     }
 
-
+    minimum () {
+        this._left = this.element.getClientRects()[0].left;
+        this.element.classList.remove('maximum');
+        this.element.classList.add('minimum');
+        this.dispatchEvent(new CustomEvent('minimized', {detail: {target: this}}));
+    }
 }
