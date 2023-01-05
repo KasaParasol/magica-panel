@@ -89,7 +89,8 @@ export default class StackContainer extends PanelBase
             && evt.detail.target.opts.maximum.enable === true && this.opts.dockable == 'full') {
                 for (const addarea of this.addareas) {
                     if (evt.detail.target.element.previousElementSibling === addarea.parentElement
-                    || evt.detail.target.element.nextElementSibling === addarea.parentElement) {
+                    || evt.detail.target.element.nextElementSibling === addarea.parentElement
+                    || evt.detail.target.parent !== this.root) {
                         addarea.classList.remove('hover');
                         continue;
                     }
