@@ -179,10 +179,7 @@ export default class StackContainer extends PanelBase
     }
 
     removeChild (val) {
-        this.addareas.filter(e => e !== val.element.nextElementSibling.children[0]);
-        val.element.nextElementSibling.remove();
-
-        let ranges = this._lastTargetRange;
+        let ranges = typeof this._lastTargetRange === 'object'? this._lastTargetRange: this.children.map(e => e.element.getClientRects()[0][this.opts.direction === 'vertical'? 'height': 'width']);
         this._lastTargetRange = undefined;
         const idx = this.children.indexOf(val);
         if (!ranges[idx - 1] && ranges[idx + 1]) {
@@ -199,6 +196,7 @@ export default class StackContainer extends PanelBase
             ranges[largeIdx] += (ranges[idx] + this.opts.separatorWidth) - smallSize;
         }
         ranges = ranges.filter((_e, i) => i !== idx).map(e => `${e}px`);
+        val.element.nextElementSibling.remove();
 
         super.removeChild(val);
         if (this.inner.children.length === 1) {
