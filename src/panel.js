@@ -94,7 +94,7 @@ export default class Panel extends PanelBase
         // 最小化/復元ボタンを追加
         const minimumbutton = document.createElement('button');
         minimumbutton.innerText = '-';
-        minimumbutton.classList.add('magica-panel-button');
+        minimumbutton.classList.add('magica-panel-button', 'minimum');
         minimumbutton.addEventListener('click', () => {
             if (this.element.classList.contains('minimum')) {
                 this.normal();

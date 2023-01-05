@@ -339,6 +339,10 @@ const style = `
 .magica-panel-stack-inner .magica-panel-button.maximum {
     display: none;
 }
+
+.magica-panel-stack-inner .magica-panel-button.minimum {
+    display: none;
+}
 `;
 
 const Value = {
