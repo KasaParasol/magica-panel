@@ -17,7 +17,8 @@ export default class StackContainer extends PanelBase
         separatorWidth: 2,
         additionalClassName: '',
         attributes: [],
-        template: undefined
+        template: undefined,
+        panelAddArea: undefined
     }
 
     /**
@@ -46,7 +47,12 @@ export default class StackContainer extends PanelBase
 
             const addArea = document.createElement('div');
             addArea.classList.add('magica-panel-stack-add', 'empty');
-            addArea.innerText = '❐';
+            if (typeof this.opts.panelAddArea === 'object') {
+                addArea.appendChild(this.opts.panelAddArea);
+            }
+            else {
+                addArea.innerText = this.opts.panelAddArea? this.opts.panelAddArea: this.opts.direction === 'vertical'? '▤': '▥';
+            }
             this.addareas.push(addArea);
             this.element.appendChild(addArea);
         }
