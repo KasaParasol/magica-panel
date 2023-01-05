@@ -52,6 +52,7 @@ import Value from "./values";
  * @property { 'disable' | 'swaponly' | 'full' }        dockable            コレクションの脱着操作ができるか
  * @property { number }                                 separatorWidth      分割境界線の幅(1～)
  * @property { string }                                 additionalClassName パネルに追加で付けるクラス名
+ * @property { string | HTMLElement }                   panelAddArea        スタック内が空のときに表示されるパネル追加アイコン
  * @property { any[] }                                  attributes          任意に指定できる属性
  */
 
