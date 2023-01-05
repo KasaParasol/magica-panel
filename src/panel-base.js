@@ -52,6 +52,7 @@ import Value from "./values";
  * @property { 'disable' | 'swaponly' | 'full' }        dockable            コレクションの脱着操作ができるか
  * @property { number }                                 separatorWidth      分割境界線の幅(1～)
  * @property { string }                                 additionalClassName パネルに追加で付けるクラス名
+ * @property { string | HTMLElement }                   panelAddArea        スタック内が空のときに表示されるパネル追加アイコン
  * @property { any[] }                                  attributes          任意に指定できる属性
  */
 
@@ -86,6 +87,15 @@ export default class PanelBase extends EventTarget
         this._childMoveHandler = (ev) => {
             this.childMoveHandler(ev);
         };
+        this._childMinimizedHandler = (ev) => {
+            this.childMinimizedHandler(ev);
+        };
+        this._childNormalizedHandler = (ev) => {
+            this.childNormalizedHandler(ev);
+        }
+        this._resizeParentHandler = (ev) => {
+            this.resizeParentHandler(ev);
+        }
 
         this._opts = opts;
         this._element = element;
@@ -157,16 +167,23 @@ export default class PanelBase extends EventTarget
     set parent (val) {
         if (this._parent) {
             this._parent.removeChild(this);
-            this._parent.removeEventListener('resize', this.resizeParentHandler);
+            this._parent.removeEventListener('resize', this._resizeParentHandler);
+            this._parent.removeEventListener('close', this._closeParentHandler);
         }
-        this._parent = val;
-        this._parent.appendChild(this);
-        this._parent.addEventListener('resize', this.resizeParentHandler);
-        this.dispatchEvent(new CustomEvent('changeparent', {detail: {target: this}}));
+        if (val) {
+            this._parent = val;
+            this._parent.appendChild(this);
+            this._parent.addEventListener('resize', this._resizeParentHandler);
+            this._parent.addEventListener('close', this._closeParentHandler);
+            this.dispatchEvent(new CustomEvent('changeparent', {detail: {target: this}}));
+        }
     }
 
     resizeParentHandler () {
-        throw new Error('impl');
+    }
+
+    closeParentHandler () {
+        this.close();
     }
 
     /**
@@ -174,7 +191,6 @@ export default class PanelBase extends EventTarget
      * @param {{rect: DOMRect, ev: DragEvent}} rect
      */
     childMoveHandler (evt) {
-        throw new Error('impl');
     }
 
     /**
@@ -182,7 +198,16 @@ export default class PanelBase extends EventTarget
      * @param {{rect: DOMRect, ev: DragEvent}} rect
      */
     childMovedHandler (evt) {
-        throw new Error('impl');
+    }
+
+    /**
+     * 
+     * @param {{rect: DOMRect, ev: DragEvent}} rect
+     */
+    childMinimizedHandler (evt) {
+    }
+
+    childNormalizedHandler (evt) {
     }
 
     changeParentHandler (evt) {
@@ -194,20 +219,36 @@ export default class PanelBase extends EventTarget
         this._children = this._children.filter(e => e !== val);
         val.removeEventListener('move', this._childMoveHandler);
         val.removeEventListener('remove', this._childMovedHandler);
+        val.removeEventListener('minimized', this._childMinimizedHandler);
+        val.removeEventListener('normalized', this._childNormalizedHandler);
         this.removeEventListener('changeparent', val._changeParentHandler);
     }
 
     appendChild (val, ref) {
-        if (ref?.nextElementSibling) {
-            this._inner.insertBefore(val.element, ref.nextElementSibling);
+        const next = ref?.nextElementSibling;
+        if (next) {
+            this._inner.insertBefore(val.element, next);
         }
         else {
             this._inner.appendChild(val.element);
         }
-        this._children.push(val);
+        if (next) {
+            const idx = this.children.map(e => e.element).findIndex(e => e.nextElementSibling === ref);
+            this._children.splice(idx + 1, 0, val);
+        }
+        else {
+            this._children.push(val);
+        }
         val.addEventListener('move', this._childMoveHandler);
         val.addEventListener('moved', this._childMovedHandler);
+        val.addEventListener('minimized', this._childMinimizedHandler);
+        val.addEventListener('normalized', this._childNormalizedHandler);
         this.addEventListener('changeparent', val._changeParentHandler);
+    }
+
+    close () {
+        this.parent = undefined;
+        this.dispatchEvent(new CustomEvent('close', {detail: {target: this}}));
     }
 
     active () {

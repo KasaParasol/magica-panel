@@ -17,18 +17,18 @@ export default class StackContainer extends PanelBase
         separatorWidth: 2,
         additionalClassName: '',
         attributes: [],
-        template: undefined
+        template: undefined,
+        panelAddArea: undefined
     }
 
     /**
      * UIを格納するパネルエリア。ウィンドウ・ペイン表示が可能
      *
-     * @param { HTMLElement }                element 自身のパネルにするHTML要素
      * @param { StackContainerOptions }      opts    オプション
      * @param { (StackContainer | Panel)[] } children 内容コンテンツ
      */
-    constructor (element, opts = StackContainer.DEFAULT_OPTIONS, ...children) {
-        super(element, Object.assign(opts, StackContainer.DEFAULT_OPTIONS, {...opts}), ...children);
+    constructor (opts = StackContainer.DEFAULT_OPTIONS, ...children) {
+        super(document.createElement('div'), Object.assign(opts, StackContainer.DEFAULT_OPTIONS, {...opts}), ...children);
 
         this._calcGridSize(undefined, undefined, this.opts.template);
         this.element.classList.add('magica-panel-stack-wrapper');
@@ -46,7 +46,12 @@ export default class StackContainer extends PanelBase
 
             const addArea = document.createElement('div');
             addArea.classList.add('magica-panel-stack-add', 'empty');
-            addArea.innerText = '❐';
+            if (typeof this.opts.panelAddArea === 'object') {
+                addArea.appendChild(this.opts.panelAddArea);
+            }
+            else {
+                addArea.innerText = this.opts.panelAddArea? this.opts.panelAddArea: this.opts.direction === 'vertical'? '▤': '▥';
+            }
             this.addareas.push(addArea);
             this.element.appendChild(addArea);
         }
@@ -83,7 +88,8 @@ export default class StackContainer extends PanelBase
             && evt.detail.target.opts.maximum.enable === true && this.opts.dockable == 'full') {
                 for (const addarea of this.addareas) {
                     if (evt.detail.target.element.previousElementSibling === addarea.parentElement
-                    || evt.detail.target.element.nextElementSibling === addarea.parentElement) {
+                    || evt.detail.target.element.nextElementSibling === addarea.parentElement
+                    || evt.detail.target.parent !== this.root) {
                         addarea.classList.remove('hover');
                         continue;
                     }
@@ -91,6 +97,7 @@ export default class StackContainer extends PanelBase
                     if (rect && rect.top < evt.detail.ev.clientY && evt.detail.ev.clientY < rect.bottom
                     && rect.left < evt.detail.ev.clientX && evt.detail.ev.clientX < rect.right) {
                         this._lastref = this.element.contains(addarea.closest('.magica-panel-stack-inner'))? addarea.parentElement: undefined;
+                        this._lastTargetRange = evt.detail.target.element.getClientRects()[0][this.opts.direction === 'vertical'? 'height': 'width'];
                         evt.detail.target.parent = this;
                     }
                     addarea.classList.remove('hover');
@@ -130,6 +137,33 @@ export default class StackContainer extends PanelBase
             this.inner.appendChild(sep);
         }
 
+        let ranges = [];
+        if (this.element.closest('body')) {
+            const windowRange = this._lastTargetRange;
+            ranges = this.children.map(e => e.element.getClientRects()?.[0]?.[this.opts.direction === 'vertical'? 'height': 'width'] || e.opts?.defaultSize[this.opts.direction === 'vertical'? 'y': 'x'] || 100);
+
+            if (this._lastref) {
+                const idx = this.children.map(e => e.element).indexOf(this._lastref.previousElementSibling);
+                const insertTargetRange = (ranges[idx] || 0) + (ranges[idx + 1] || 0) / 2;
+                const insertRange = Math.min(insertTargetRange, windowRange) - this.opts.separatorWidth;
+                if (~idx && ranges[idx + 1]) {
+                    const [smallIdx, largeIdx] = ranges[idx] > ranges[idx + 1]? [idx + 1, idx]: [idx, idx + 1];
+                    const ratio = ranges[smallIdx] / ranges[largeIdx];
+                    const smallSize = Math.round(insertRange / 2 * ratio);
+                    ranges[smallIdx] -= smallSize;
+                    ranges[largeIdx] -= (insertRange - smallSize);
+                }
+                else if (!~idx) {
+                    ranges[idx + 1] -= insertRange;
+                }
+                else {
+                    ranges[idx] -= insertRange;
+                }
+                ranges.splice(idx + 1, 0, insertRange - this.opts.separatorWidth);
+            }
+            ranges = ranges.map(e => `${e}px`);
+        }
+
         super.appendChild(val, this._lastref);
         if (val.maximum) val.maximum();
 
@@ -142,19 +176,36 @@ export default class StackContainer extends PanelBase
             this.inner.appendChild(sep);
         }
         this.element.classList.remove('empty');
-        this._calcGridSize();
+        if (this.element.closest('body')) this._calcGridSize(undefined, undefined, ranges.length === 0? undefined: ranges);
     }
 
     removeChild (val) {
-        this.addareas.filter(e => e !== val.element.nextElementSibling.children[0]);
+        let ranges = typeof this._lastTargetRange === 'object'? this._lastTargetRange: this.children.map(e => e.element.getClientRects()[0][this.opts.direction === 'vertical'? 'height': 'width']);
+        this._lastTargetRange = undefined;
+        const idx = this.children.indexOf(val);
+        if (!ranges[idx - 1] && ranges[idx + 1]) {
+            ranges[idx + 1] += ranges[idx] + this.opts.separatorWidth;
+        }
+        else if (!ranges[idx + 1] && ranges[idx - 1]) {
+            ranges[idx - 1] += ranges[idx] + this.opts.separatorWidth;
+        }
+        else if (ranges[idx + 1] && ranges[idx - 1]) {
+            const [smallIdx, largeIdx] = ranges[idx - 1] > ranges[idx + 1]? [idx + 1, idx - 1]: [idx - 1, idx + 1];
+            const ratio = ranges[smallIdx] / ranges[largeIdx];
+            const smallSize = Math.round((ranges[idx] + this.opts.separatorWidth) / 2 * ratio);
+            ranges[smallIdx] += smallSize;
+            ranges[largeIdx] += (ranges[idx] + this.opts.separatorWidth) - smallSize;
+        }
+        ranges = ranges.filter((_e, i) => i !== idx).map(e => `${e}px`);
         val.element.nextElementSibling.remove();
+
         super.removeChild(val);
         if (this.inner.children.length === 1) {
             this.addareas.filter(e => e !== this.inner.children[0].children[0]);
             this.inner.children[0].remove();
             this.element.classList.add('empty');
         }
-        this._calcGridSize();
+        this._calcGridSize(undefined, undefined, ranges.length === 0? undefined: ranges);
     }
 
     _calcGridSize (sep, pos, template) {
@@ -211,7 +262,8 @@ export default class StackContainer extends PanelBase
      * 子要素の移動に追従します。
      */
     childMoveHandler (evt) {
-        evt.detail.target.normal();
+        this._lastTargetRange = this.children.map(e => e.element.getClientRects()[0][this.opts.direction === 'vertical'? 'height': 'width']);
+        evt.detail.target.normal(evt.detail.ev.pageX);
         evt.detail.target.parent = this.root;
     }
 

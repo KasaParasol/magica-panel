@@ -1,6 +1,6 @@
 {
   "name": "magica-panel",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "MDIなUIを構築します。",
   "main": "index.js",
   "scripts": {

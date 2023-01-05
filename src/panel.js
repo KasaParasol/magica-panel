@@ -1,4 +1,5 @@
 import PanelBase from "./panel-base";
+import BaseContainer from "./base-container";
 
 /**
  * UIを格納するパネルエリア。ウィンドウ表示・ほかパネルへの格納が可能
@@ -29,12 +30,11 @@ export default class Panel extends PanelBase
     /**
      * UIを格納するパネルエリア。ウィンドウ・ペイン表示が可能
      *
-     * @param { HTMLElement }             element 自身のパネルにするHTML要素
      * @param { PanelOptions }            opts    オプション
      * @param { HTMLElement | PanelBase } content 内容コンテンツ
      */
-    constructor (element, opts = Panel.DEFAULT_OPTIONS, content) {
-        super(element, Object.assign(opts, Panel.DEFAULT_OPTIONS, {...opts}), content);
+    constructor (opts = Panel.DEFAULT_OPTIONS, content) {
+        super(document.createElement('div'), Object.assign(opts, Panel.DEFAULT_OPTIONS, {...opts}), content);
 
         this.element.classList.add('magica-panel-window');
         this.inner.className = 'magica-panel-inner';
@@ -74,6 +74,9 @@ export default class Panel extends PanelBase
         const closebutton = document.createElement('button');
         closebutton.innerText = '×';
         closebutton.classList.add('magica-panel-button', 'close');
+        closebutton.addEventListener('click', () => {
+            this.close();
+        });
         buttonarea.appendChild(closebutton);
 
         // 最大化/復元ボタンを追加
@@ -87,14 +90,23 @@ export default class Panel extends PanelBase
             else {
                 this.maximum();
             }
-        })
+        });
         buttonarea.insertBefore(maximumbutton, closebutton);
 
 
         // 最小化/復元ボタンを追加
         const minimumbutton = document.createElement('button');
         minimumbutton.innerText = '-';
-        minimumbutton.classList.add('magica-panel-button');
+        minimumbutton.classList.add('magica-panel-button', 'minimum');
+        minimumbutton.addEventListener('click', () => {
+            if (this.element.classList.contains('minimum')) {
+                this.normal();
+            }
+            else {
+                this.minimum();
+            }
+        });
+
         buttonarea.insertBefore(minimumbutton, maximumbutton);
     }
 
@@ -148,6 +160,10 @@ export default class Panel extends PanelBase
      * @param { MouseEvent } ev
      */
     _moveTitlebarHandler (ev) {
+        if ((this.element.classList.contains('maximum') && this.parent instanceof BaseContainer )
+        || this.element.classList.contains('minimum')) {
+            return;
+        }
         if (ev.type === 'mousedown') {
             this._clickstart = {x: ev.offsetX, y: ev.offsetY};
         }
@@ -161,32 +177,66 @@ export default class Panel extends PanelBase
             this.dispatchEvent(new CustomEvent('move', {detail: {rect: this.element.getClientRects()[0], ev, target: this}}));
         }
         else if (ev.type === 'dragend') {
-            const currentRect = this.element.getClientRects()[0];
-            if (this.parent.inner.clientHeight > this.element.clientHeight
-            && (this.parent.inner.clientHeight) < currentRect.bottom) {
-                this.element.style.top = `${this.parent.inner.clientHeight - this.element.clientHeight}px`;
-            }
-            if (this.parent.inner.clientWidth > this.element.clientWidth
-            && (this.parent.inner.clientWidth) < currentRect.right) {
-                this.element.style.left = `${this.parent.inner.clientWidth - this.element.clientWidth}px`;
-            }
-            if (currentRect.left < 0) {
-                this.element.style.left = `0px`;
-            }
-            if (currentRect.top < 0) {
-                this.element.style.top = `0px`;
-            }
+            this.adjustWindowPosition();
             this.dispatchEvent(new CustomEvent('moved', {detail: {rect: this.element.getClientRects()[0], ev, target: this}}));
         }
     }
 
+    adjustWindowPosition() {
+        const currentRect = this.element.getClientRects()[0];
+        if (this.parent.inner.clientHeight > this.element.clientHeight
+        && (this.parent.inner.clientHeight) < currentRect.bottom) {
+            this.element.style.top = `${this.parent.inner.clientHeight - this.element.clientHeight}px`;
+        }
+        if (this.parent.inner.clientWidth > this.element.clientWidth
+        && (this.parent.inner.clientWidth) < currentRect.right) {
+            this.element.style.left = `${this.parent.inner.clientWidth - this.element.clientWidth}px`;
+        }
+        if (currentRect.left < 0) {
+            this.element.style.left = `0px`;
+        }
+        if (currentRect.top < 0) {
+            this.element.style.top = `0px`;
+        }
+    }
+
     maximum () {
+        this._left = this.element.getClientRects()[0]?.left || 0;
+        this.element.classList.remove('minimum');
         this.element.classList.add('maximum');
     }
 
-    normal () {
+    normal (x) {
+        let ratio = 0;
+        if (x !== undefined) {
+            const rect = this.element.getClientRects()[0];
+            ratio = x / (rect.left + rect.width - this.parent.element.getClientRects()[0].left);
+        }
+
+        this.element.classList.remove('minimum');
         this.element.classList.remove('maximum');
+
+        if (x !== undefined) {
+            const w = this.element.getClientRects()[0].width;
+            if (this._clickstart) this._clickstart.x = w * ratio;
+            this.element.style.left = `${Math.round(x - (w * ratio))}px`;
+        }
+        else if (this._left) {
+            this.element.style.left = `${this._left}px`;
+        }
+        this.dispatchEvent(new CustomEvent('normalized', {detail: {target: this}}));
     }
 
+    minimum () {
+        this._left = this.element.getClientRects()[0]?.left || 0;
+        this.element.classList.remove('maximum');
+        this.element.classList.add('minimum');
+        this.dispatchEvent(new CustomEvent('minimized', {detail: {target: this}}));
+    }
 
+    resizeParentHandler (_evt) {
+        if (!this.element.classList.contains('maximum') && !this.element.classList.contains('minimum')) {
+            this.adjustWindowPosition();
+        }
+    }
 }

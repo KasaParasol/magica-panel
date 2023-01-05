@@ -34,6 +34,9 @@ const style = `
     height: 1.5rem;
     color: white;
     user-select:none;
+    padding-right: calc(2.5rem * 3);
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .magica-panel-inner {
@@ -156,6 +159,20 @@ const style = `
     height: calc(100% - 1.5rem - 6px) !important;
 }
 
+.magica-panel-window.minimum {
+    width: 186px;
+    bottom: 0 !important;
+    top: unset !important;
+}
+
+.magica-panel-window.minimum > .magica-panel-inner {
+    display: none;
+}
+
+.magica-panel-window.minimum > .magica-panel-edge {
+    display: none;
+}
+
 .magica-panel-button-area {
     position: absolute;
     top: 0;
@@ -207,7 +224,6 @@ const style = `
 .magica-panel-stack-add {
     background-color: midnightblue;
     color: white;
-    border-left: solid 2px midnightblue;
 }
 
 .magica-panel-stack-add {
@@ -232,8 +248,6 @@ const style = `
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 3rem;
-    border-left: none;
-    border-top: none;
     width: 5rem;
     text-align: center;
     opacity: 0.5;
@@ -326,6 +340,9 @@ const style = `
     display: none;
 }
 
+.magica-panel-stack-inner .magica-panel-button.minimum {
+    display: none;
+}
 `;
 
 const Value = {
