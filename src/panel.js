@@ -170,22 +170,26 @@ export default class Panel extends PanelBase
             this.dispatchEvent(new CustomEvent('move', {detail: {rect: this.element.getClientRects()[0], ev, target: this}}));
         }
         else if (ev.type === 'dragend') {
-            const currentRect = this.element.getClientRects()[0];
-            if (this.parent.inner.clientHeight > this.element.clientHeight
-            && (this.parent.inner.clientHeight) < currentRect.bottom) {
-                this.element.style.top = `${this.parent.inner.clientHeight - this.element.clientHeight}px`;
-            }
-            if (this.parent.inner.clientWidth > this.element.clientWidth
-            && (this.parent.inner.clientWidth) < currentRect.right) {
-                this.element.style.left = `${this.parent.inner.clientWidth - this.element.clientWidth}px`;
-            }
-            if (currentRect.left < 0) {
-                this.element.style.left = `0px`;
-            }
-            if (currentRect.top < 0) {
-                this.element.style.top = `0px`;
-            }
+            this.adjustWindowPosition();
             this.dispatchEvent(new CustomEvent('moved', {detail: {rect: this.element.getClientRects()[0], ev, target: this}}));
+        }
+    }
+
+    adjustWindowPosition() {
+        const currentRect = this.element.getClientRects()[0];
+        if (this.parent.inner.clientHeight > this.element.clientHeight
+        && (this.parent.inner.clientHeight) < currentRect.bottom) {
+            this.element.style.top = `${this.parent.inner.clientHeight - this.element.clientHeight}px`;
+        }
+        if (this.parent.inner.clientWidth > this.element.clientWidth
+        && (this.parent.inner.clientWidth) < currentRect.right) {
+            this.element.style.left = `${this.parent.inner.clientWidth - this.element.clientWidth}px`;
+        }
+        if (currentRect.left < 0) {
+            this.element.style.left = `0px`;
+        }
+        if (currentRect.top < 0) {
+            this.element.style.top = `0px`;
         }
     }
 
@@ -221,5 +225,11 @@ export default class Panel extends PanelBase
         this.element.classList.remove('maximum');
         this.element.classList.add('minimum');
         this.dispatchEvent(new CustomEvent('minimized', {detail: {target: this}}));
+    }
+
+    resizeParentHandler (_evt) {
+        if (!this.element.classList.contains('maximum') && !this.element.classList.contains('minimum')) {
+            this.adjustWindowPosition();
+        }
     }
 }
