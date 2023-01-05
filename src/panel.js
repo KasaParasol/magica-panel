@@ -157,6 +157,10 @@ export default class Panel extends PanelBase
      * @param { MouseEvent } ev
      */
     _moveTitlebarHandler (ev) {
+        if (this.element.classList.contains('maximum')
+        || this.element.classList.contains('minimum')) {
+            return;
+        }
         if (ev.type === 'mousedown') {
             this._clickstart = {x: ev.offsetX, y: ev.offsetY};
         }
