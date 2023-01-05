@@ -253,7 +253,7 @@ export default class StackContainer extends PanelBase
             ev.dataTransfer.setDragImage( new Image(), 0, 0 );
         });
         elem.addEventListener('drag', (ev) => {
-            if (ev.screenY === 0 
+            if (ev.screenY === 0
             || this.opts.reproportionable === false) {
                 return;
             }
