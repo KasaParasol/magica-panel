@@ -13,9 +13,9 @@ MagicaPanelをインストールするコマンドを以下に記...
 
 ### ライブラリ利用方法 ###
 
-MagicaPanelが提供するクラス全てにおいて以下の共通のコンストラクタ引数を取ります。
+MagicaPanelが提供する各クラスは以下のコンストラクタ引数を取ります。
 
-1. 自身を表示するHTMLElement
+1. 自身を表示する`HTMLElement`(`BaseContainer` のみ)
 2. オプション
 3. (以降) 自身の中に表示する子要素
 
@@ -30,25 +30,21 @@ MagicaPanelが提供するクラス全てにおいて以下の共通のコンス
         {overflowX: 'hidden', overflowY: 'hidden'},
         // `StackContainer`には子アイテムを整列表示することが出来ます。
         new MagicaPanel.StackContainer(
-            document.createElement('div'),
             undefined, // オプションを与えなかった場合、各クラスの既定が採用されます。
             // `Panel`は`StackContainer`の子要素として整列表示されます。
             // `Panel`が唯一純粋なHTMLElementを子要素に持つことが出来ます。
             //     (`StackContainer`を持つことも出来ます。)
             new MagicaPanel.Panel(
-                document.createElement('div'),
                 {title: 'stack-sample!'},
                 document.createElement('div')
             ),
             new MagicaPanel.Panel(
-                document.createElement('div'),
                 {title: 'stack-sample!'},
                 document.createElement('div')
             )
         ),
         // `Panel`は`StackContainer`に含まれないため、ウィンドウとしてフロー表示されます。
         new MagicaPanel.Panel(
-            document.createElement('div'),
             {title: 'window-sample!'},
             document.createElement('div')
         )

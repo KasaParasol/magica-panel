@@ -38,28 +38,23 @@
             document.getElementById("main"),
             {overflowX: 'hidden', overflowY: 'hidden'},
             new MagicaPanel.StackContainer(
-                document.getElementById("stack1"),
                 {
                     direction: 'vertical',
                     template: ['86px', '1fr']
                 },
                 new MagicaPanel.Panel(
-                    document.getElementById("sub1"),
                     {title: 'sample!'},
                     document.getElementById('content1')
                 ),
                 new MagicaPanel.StackContainer(
-                    document.getElementById("stack2"),
                     {direction: 'horizontal'},
                 ),
             ),
             new MagicaPanel.Panel(
-                document.getElementById("sub2"),
                 {title: 'sample! (2)'},
                 document.getElementById('content2')
             ),
             new MagicaPanel.Panel(
-                document.getElementById("sub3"),
                 {title: 'sample! (3)'},
                 document.getElementById('content3')
             )

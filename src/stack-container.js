@@ -24,12 +24,11 @@ export default class StackContainer extends PanelBase
     /**
      * UIを格納するパネルエリア。ウィンドウ・ペイン表示が可能
      *
-     * @param { HTMLElement }                element 自身のパネルにするHTML要素
      * @param { StackContainerOptions }      opts    オプション
      * @param { (StackContainer | Panel)[] } children 内容コンテンツ
      */
-    constructor (element, opts = StackContainer.DEFAULT_OPTIONS, ...children) {
-        super(element, Object.assign(opts, StackContainer.DEFAULT_OPTIONS, {...opts}), ...children);
+    constructor (opts = StackContainer.DEFAULT_OPTIONS, ...children) {
+        super(document.createElement('div'), Object.assign(opts, StackContainer.DEFAULT_OPTIONS, {...opts}), ...children);
 
         this._calcGridSize(undefined, undefined, this.opts.template);
         this.element.classList.add('magica-panel-stack-wrapper');
@@ -138,30 +137,32 @@ export default class StackContainer extends PanelBase
             this.inner.appendChild(sep);
         }
 
-        const windowRange = this._lastTargetRange;
+        let ranges = [];
+        if (this.element.closest('body')) {
+            const windowRange = this._lastTargetRange;
+            ranges = this.children.map(e => e.element.getClientRects()?.[0]?.[this.opts.direction === 'vertical'? 'height': 'width'] || e.opts?.defaultSize[this.opts.direction === 'vertical'? 'y': 'x'] || 100);
 
-        let ranges = this.children.map(e => e.element.getClientRects()[0][this.opts.direction === 'vertical'? 'height': 'width']);
-
-        if (this._lastref) {
-            const idx = this.children.map(e => e.element).indexOf(this._lastref.previousElementSibling);
-            const insertTargetRange = (ranges[idx] || 0) + (ranges[idx + 1] || 0) / 2;
-            const insertRange = Math.min(insertTargetRange, windowRange) - this.opts.separatorWidth;
-            if (~idx && ranges[idx + 1]) {
-                const [smallIdx, largeIdx] = ranges[idx] > ranges[idx + 1]? [idx + 1, idx]: [idx, idx + 1];
-                const ratio = ranges[smallIdx] / ranges[largeIdx];
-                const smallSize = Math.round(insertRange / 2 * ratio);
-                ranges[smallIdx] -= smallSize;
-                ranges[largeIdx] -= (insertRange - smallSize);
+            if (this._lastref) {
+                const idx = this.children.map(e => e.element).indexOf(this._lastref.previousElementSibling);
+                const insertTargetRange = (ranges[idx] || 0) + (ranges[idx + 1] || 0) / 2;
+                const insertRange = Math.min(insertTargetRange, windowRange) - this.opts.separatorWidth;
+                if (~idx && ranges[idx + 1]) {
+                    const [smallIdx, largeIdx] = ranges[idx] > ranges[idx + 1]? [idx + 1, idx]: [idx, idx + 1];
+                    const ratio = ranges[smallIdx] / ranges[largeIdx];
+                    const smallSize = Math.round(insertRange / 2 * ratio);
+                    ranges[smallIdx] -= smallSize;
+                    ranges[largeIdx] -= (insertRange - smallSize);
+                }
+                else if (!~idx) {
+                    ranges[idx + 1] -= insertRange;
+                }
+                else {
+                    ranges[idx] -= insertRange;
+                }
+                ranges.splice(idx + 1, 0, insertRange - this.opts.separatorWidth);
             }
-            else if (!~idx) {
-                ranges[idx + 1] -= insertRange;
-            }
-            else {
-                ranges[idx] -= insertRange;
-            }
-            ranges.splice(idx + 1, 0, insertRange - this.opts.separatorWidth);
+            ranges = ranges.map(e => `${e}px`);
         }
-        ranges = ranges.map(e => `${e}px`);
 
         super.appendChild(val, this._lastref);
         if (val.maximum) val.maximum();
@@ -175,7 +176,7 @@ export default class StackContainer extends PanelBase
             this.inner.appendChild(sep);
         }
         this.element.classList.remove('empty');
-        this._calcGridSize(undefined, undefined, ranges.length === 0? undefined: ranges);
+        if (this.element.closest('body')) this._calcGridSize(undefined, undefined, ranges.length === 0? undefined: ranges);
     }
 
     removeChild (val) {

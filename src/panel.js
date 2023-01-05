@@ -30,12 +30,11 @@ export default class Panel extends PanelBase
     /**
      * UIを格納するパネルエリア。ウィンドウ・ペイン表示が可能
      *
-     * @param { HTMLElement }             element 自身のパネルにするHTML要素
      * @param { PanelOptions }            opts    オプション
      * @param { HTMLElement | PanelBase } content 内容コンテンツ
      */
-    constructor (element, opts = Panel.DEFAULT_OPTIONS, content) {
-        super(element, Object.assign(opts, Panel.DEFAULT_OPTIONS, {...opts}), content);
+    constructor (opts = Panel.DEFAULT_OPTIONS, content) {
+        super(document.createElement('div'), Object.assign(opts, Panel.DEFAULT_OPTIONS, {...opts}), content);
 
         this.element.classList.add('magica-panel-window');
         this.inner.className = 'magica-panel-inner';
@@ -202,7 +201,7 @@ export default class Panel extends PanelBase
     }
 
     maximum () {
-        this._left = this.element.getClientRects()[0].left;
+        this._left = this.element.getClientRects()[0]?.left || 0;
         this.element.classList.remove('minimum');
         this.element.classList.add('maximum');
     }
@@ -229,7 +228,7 @@ export default class Panel extends PanelBase
     }
 
     minimum () {
-        this._left = this.element.getClientRects()[0].left;
+        this._left = this.element.getClientRects()[0]?.left || 0;
         this.element.classList.remove('maximum');
         this.element.classList.add('minimum');
         this.dispatchEvent(new CustomEvent('minimized', {detail: {target: this}}));
