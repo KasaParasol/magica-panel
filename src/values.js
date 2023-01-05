@@ -34,6 +34,9 @@ const style = `
     height: 1.5rem;
     color: white;
     user-select:none;
+    padding-right: calc(2.5rem * 3);
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .magica-panel-inner {
@@ -154,6 +157,20 @@ const style = `
 .magica-panel-window.maximum .magica-panel-inner {
     width: calc(100% - 2px) !important;
     height: calc(100% - 1.5rem - 6px) !important;
+}
+
+.magica-panel-window.minimum {
+    width: 186px;
+    bottom: 0 !important;
+    top: unset !important;
+}
+
+.magica-panel-window.minimum > .magica-panel-inner {
+    display: none;
+}
+
+.magica-panel-window.minimum > .magica-panel-edge {
+    display: none;
 }
 
 .magica-panel-button-area {
@@ -322,7 +339,6 @@ const style = `
 .magica-panel-stack-inner .magica-panel-button.maximum {
     display: none;
 }
-
 `;
 
 const Value = {
