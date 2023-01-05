@@ -168,14 +168,22 @@ export default class PanelBase extends EventTarget
         if (this._parent) {
             this._parent.removeChild(this);
             this._parent.removeEventListener('resize', this._resizeParentHandler);
+            this._parent.removeEventListener('close', this._closeParentHandler);
         }
-        this._parent = val;
-        this._parent.appendChild(this);
-        this._parent.addEventListener('resize', this._resizeParentHandler);
-        this.dispatchEvent(new CustomEvent('changeparent', {detail: {target: this}}));
+        if (val) {
+            this._parent = val;
+            this._parent.appendChild(this);
+            this._parent.addEventListener('resize', this._resizeParentHandler);
+            this._parent.addEventListener('close', this._closeParentHandler);
+            this.dispatchEvent(new CustomEvent('changeparent', {detail: {target: this}}));
+        }
     }
 
     resizeParentHandler () {
+    }
+
+    closeParentHandler () {
+        this.close();
     }
 
     /**
@@ -236,6 +244,11 @@ export default class PanelBase extends EventTarget
         val.addEventListener('minimized', this._childMinimizedHandler);
         val.addEventListener('normalized', this._childNormalizedHandler);
         this.addEventListener('changeparent', val._changeParentHandler);
+    }
+
+    close () {
+        this.parent = undefined;
+        this.dispatchEvent(new CustomEvent('close', {detail: {target: this}}));
     }
 
     active () {

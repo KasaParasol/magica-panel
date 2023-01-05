@@ -74,6 +74,9 @@ export default class Panel extends PanelBase
         const closebutton = document.createElement('button');
         closebutton.innerText = '×';
         closebutton.classList.add('magica-panel-button', 'close');
+        closebutton.addEventListener('click', () => {
+            this.close();
+        });
         buttonarea.appendChild(closebutton);
 
         // 最大化/復元ボタンを追加
