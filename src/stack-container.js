@@ -11,9 +11,8 @@ export default class StackContainer extends PanelBase
     static DEFAULT_OPTIONS = {
         type: 'stack',
         direction: 'vertical',
-        overflow: 'scroll',
         reproportionable: true,
-        dockable: 'full',
+        dockable: true,
         separatorWidth: 2,
         additionalClassName: '',
         attributes: [],
@@ -45,7 +44,7 @@ export default class StackContainer extends PanelBase
             }
 
             const addArea = document.createElement('div');
-            addArea.classList.add('magica-panel-stack-add', 'empty');
+            addArea.classList.add('magica-panel-stack-separator', 'empty');
             if (typeof this.opts.panelAddArea === 'object') {
                 addArea.appendChild(this.opts.panelAddArea);
             }
@@ -61,7 +60,7 @@ export default class StackContainer extends PanelBase
             const elemRect = this.element.getClientRects()[0];
             if (elemRect.top < mouseY && mouseY < elemRect.bottom
             && elemRect.left < mouseX && mouseX < elemRect.right
-            && evt.detail.target.opts.maximum.enable === true && this.opts.dockable == 'full') {
+            && evt.detail.target.opts.maximum.enable === true && this.opts.dockable == true) {
                 this.element.classList.add('hover');
             }
             else {
@@ -85,7 +84,7 @@ export default class StackContainer extends PanelBase
             const elemRect = this.element.getClientRects()[0];
             if (elemRect.top < mouseY && mouseY < elemRect.bottom
             && elemRect.left < mouseX && mouseX < elemRect.right
-            && evt.detail.target.opts.maximum.enable === true && this.opts.dockable == 'full') {
+            && evt.detail.target.opts.maximum.enable === true && this.opts.dockable == true) {
                 for (const addarea of this.addareas) {
                     if (evt.detail.target.element.previousElementSibling === addarea.parentElement
                     || evt.detail.target.element.nextElementSibling === addarea.parentElement
@@ -219,7 +218,7 @@ export default class StackContainer extends PanelBase
             currentSizes[0] = '1fr';
         }
         if (sep && sep.previousElementSibling && sep.nextElementSibling && pos !== undefined) {
-            const bros = Array.from(this.inner.children).filter(e => !e.classList.contains('magica-panel-stack-add'));
+            const bros = Array.from(this.inner.children).filter(e => !e.classList.contains('magica-panel-stack-separator'));
             const prevIdx = bros.indexOf(sep.previousElementSibling);
             const nextIdx = bros.indexOf(sep.nextElementSibling);
             const prevRect = sep.previousElementSibling.getClientRects()[0];
@@ -243,14 +242,19 @@ export default class StackContainer extends PanelBase
 
     _generateSeparator () {
         const elem = document.createElement ('div');
-        elem.classList.add('magica-panel-stack-add');
+        elem.classList.add('magica-panel-stack-separator');
+        if (this.opts.reproportionable === false) elem.classList.add('disable');
         elem.style[this.opts.direction === 'vertical'? 'height': 'width'] = `${this.opts.separatorWidth}px`;
         elem.draggable = true;
         const inner = document.createElement ('div');
-        inner.classList.add('magica-panel-stack-add-droparea');
+        inner.classList.add('magica-panel-stack-separator-droparea');
         elem.appendChild(inner);
+        elem.addEventListener('dragstart', (ev) => {
+            ev.dataTransfer.setDragImage( new Image(), 0, 0 );
+        });
         elem.addEventListener('drag', (ev) => {
-            if (ev.screenY === 0) {
+            if (ev.screenY === 0 
+            || this.opts.reproportionable === false) {
                 return;
             }
             this._calcGridSize(ev.target, this.opts.direction === 'vertical'? ev.pageY : ev.pageX);

@@ -47,9 +47,8 @@ import Value from "./values";
  * @property { 'stack' }                                type                パネル種別
  * @property { 'vertical' | 'horizontal' | TabOptions } direction           分割方向
  * @property { string[] }                               template            コレクション各要素の初期サイズ
- * @property { 'scroll' | 'hidden' }                    overflow            内容コンテンツのコレクションが溢れた場合
  * @property { boolean }                                reproportionable    コレクションの比率を操作できるか
- * @property { 'disable' | 'swaponly' | 'full' }        dockable            コレクションの脱着操作ができるか
+ * @property { boolean }                                dockable            コレクションの脱着操作ができるか(ユーザ操作から)
  * @property { number }                                 separatorWidth      分割境界線の幅(1～)
  * @property { string }                                 additionalClassName パネルに追加で付けるクラス名
  * @property { string | HTMLElement }                   panelAddArea        スタック内が空のときに表示されるパネル追加アイコン
