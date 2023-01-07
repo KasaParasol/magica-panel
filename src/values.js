@@ -52,6 +52,7 @@ const style = `
     width: 100%;
     text-overflow: ellipsis;
     overflow: hidden;
+    white-space: nowrap;
 }
 
 .magica-panel-inner {
