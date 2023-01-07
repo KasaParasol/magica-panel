@@ -266,4 +266,19 @@ export default class Panel extends PanelBase
             this.adjustWindowPosition();
         }
     }
+
+    changeParentHandler (evt) {
+        super.changeParentHandler(evt);
+        if (this.opts.modal === 'modal') {
+            this.outer = document.createElement('div');
+            this.outer.classList.add('magica-panel-modal-blocker');
+            this.element.parentElement.insertBefore(this.outer, this.element);
+            this.outer.appendChild(this.element);
+            const rect = this.element.getClientRects()[0];
+            if (rect) {
+                this.element.style.left = `calc(50% - ${rect.width / 2}px)`;
+                this.element.style.top = `calc(50% - ${rect.height / 2}px)`;
+            }
+        };
+    }
 }

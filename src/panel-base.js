@@ -75,6 +75,7 @@ export default class PanelBase extends EventTarget
     constructor (element, opts, ...children) {
         super();
 
+        this.outer = undefined;
         this._changeParentHandler = (ev) => {
             this.changeParentHandler(ev);
         };
@@ -174,6 +175,7 @@ export default class PanelBase extends EventTarget
             this._parent.addEventListener('close', this._closeParentHandler);
             this.dispatchEvent(new CustomEvent('changeparent', {detail: {target: this}}));
         }
+        this.changeParentHandler(undefined);
     }
 
     resizeParentHandler () {
@@ -212,7 +214,7 @@ export default class PanelBase extends EventTarget
     }
 
     removeChild (val) {
-        this._inner.removeChild(val.element);
+        this._inner.removeChild(val.outer? val.outer: val.element);
         this._children = this._children.filter(e => e !== val);
         val.removeEventListener('move', this._childMoveHandler);
         val.removeEventListener('remove', this._childMovedHandler);
@@ -224,10 +226,10 @@ export default class PanelBase extends EventTarget
     appendChild (val, ref) {
         const next = ref?.nextElementSibling;
         if (next) {
-            this._inner.insertBefore(val.element, next);
+            this._inner.insertBefore(val.outer? val.outer: val.element, next);
         }
         else {
-            this._inner.appendChild(val.element);
+            this._inner.appendChild(val.outer? val.outer: val.element);
         }
         if (next) {
             const idx = this.children.map(e => e.element).findIndex(e => e.nextElementSibling === ref);

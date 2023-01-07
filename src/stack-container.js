@@ -114,7 +114,6 @@ export default class StackContainer extends PanelBase
 
     set parent (val) {
         super.parent = val;
-        this.changeParentHandler(undefined);
     }
 
     changeParentHandler (evt) {
