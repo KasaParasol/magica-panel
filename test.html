@@ -56,7 +56,11 @@
                 document.getElementById('content2')
             ),
             new MagicaPanel.Panel(
-                {title: 'sample! (3)'},
+                {
+                    title: 'sample! (3)',
+                    maxSize: {x: 500, y: 500},
+                    minSize: {x: 200, y: 200}
+                },
                 document.getElementById('content3')
             )
         );
