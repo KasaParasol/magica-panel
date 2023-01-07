@@ -39,6 +39,14 @@ const style = `
     overflow: hidden;
 }
 
+.magica-panel-window.maximum > .magica-panel-titlebar.maximum-disable {
+    display: none;
+}
+
+.magica-panel-window.maximum > .magica-panel-titlebar.maximum-disable ~ .magica-panel-button-area {
+    display: none;
+}
+
 .magica-panel-titlebar > * {
     position: absolute;
     width: 100%;
@@ -161,9 +169,13 @@ const style = `
     height: calc(1.5rem + 4px);
 }
 
-.magica-panel-window.maximum .magica-panel-inner {
+.magica-panel-window.maximum > .magica-panel-inner {
     width: calc(100% - 2px) !important;
     height: calc(100% - 1.5rem - 6px) !important;
+}
+
+.magica-panel-window.maximum > .magica-panel-titlebar.maximum-disable ~ .magica-panel-inner {
+    height: calc(100% - 2px) !important;
 }
 
 .magica-panel-window.minimum {
@@ -196,6 +208,10 @@ const style = `
     width: 2.5rem;
     font-size: 1rem;
     background: midnightblue;
+}
+
+.magica-panel-button.deny {
+    display: none;
 }
 
 .magica-panel-button.close {

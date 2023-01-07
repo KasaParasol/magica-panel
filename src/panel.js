@@ -17,7 +17,7 @@ export default class Panel extends PanelBase
         title: '',
         closeable: true,
         autoClose: true,
-        minimum: {enable: true, showTitlebar: true},
+        minimable: true,
         maximum: {enable: true, showTitlebar: true},
         defaultMode: 'normal',
         modal: 'modaless',
@@ -61,6 +61,9 @@ export default class Panel extends PanelBase
         this.titlebar.draggable = true;
         this.element.insertBefore(titlebar, this.element.children[0]);
         this.titlebar.classList.add('magica-panel-titlebar');
+        if (!this.opts.maximum.showTitlebar) {
+            this.titlebar.classList.add('maximum-disable');
+        }
         this.titlebar.addEventListener('mousedown', (ev) => this._moveTitlebarHandler(ev));
         this.titlebar.addEventListener('drag', (ev) => this._moveTitlebarHandler(ev));
         this.titlebar.addEventListener('dragend', (ev) => this._moveTitlebarHandler(ev));
@@ -79,6 +82,9 @@ export default class Panel extends PanelBase
         const closebutton = document.createElement('button');
         closebutton.innerText = '×';
         closebutton.classList.add('magica-panel-button', 'close');
+        if (!this.opts.closeable) {
+            closebutton.classList.add('deny');
+        }
         closebutton.addEventListener('click', () => {
             this.close();
         });
@@ -96,6 +102,9 @@ export default class Panel extends PanelBase
                 this.maximum();
             }
         });
+        if (!this.opts.maximum.enable) {
+            maximumbutton.classList.add('deny');
+        }
         buttonarea.insertBefore(maximumbutton, closebutton);
 
 
@@ -111,6 +120,9 @@ export default class Panel extends PanelBase
                 this.minimum();
             }
         });
+        if (!this.opts.minimable) {
+            minimumbutton.classList.add('deny');
+        }
 
         buttonarea.insertBefore(minimumbutton, maximumbutton);
     }

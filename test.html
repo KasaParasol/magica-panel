@@ -44,7 +44,13 @@
                     dockable: false
                 },
                 new MagicaPanel.Panel(
-                    {title: 'sample!'},
+                    {
+                        title: 'sample!',
+                        maximum: {
+                            enable: false,
+                            showTitlebar: false
+                        }
+                    },
                     document.getElementById('content1')
                 ),
                 new MagicaPanel.StackContainer(
@@ -52,7 +58,10 @@
                 ),
             ),
             new MagicaPanel.Panel(
-                {title: 'sample! (2)'},
+                {
+                    title: 'sample! (2)',
+                    closeable: false
+                },
                 document.getElementById('content2')
             ),
             new MagicaPanel.Panel(

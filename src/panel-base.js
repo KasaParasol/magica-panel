@@ -10,7 +10,7 @@ import Value from "./values";
 /**
  * @typedef ResizeableOptions
  *
- * @property { boolean } enable       有効・無効
+ * @property { boolean } enable       ユーザ操作の有効・無効
  * @property { boolean } showTitlebar 適用時にタイトルバーを表示するか
  */
 
@@ -24,10 +24,9 @@ import Value from "./values";
  * @property { CoordinationOptions }              defaultSize         初期サイズ(320x240, タイトルバー、ウィンドウ枠線含まず)
  * @property { string | HTMLElement }             title               タイトル
  * @property { boolean }                          closeable           バツボタンを出現させる
- * @property { boolean }                          autoClose           子パネルがなくなれば自動的に閉じる
- * @property { ResizeableOptions }                minimum             最小化の挙動
+ * @property { boolean }                          minimable           最小化ボタンを出現させる
  * @property { ResizeableOptions }                maximum             最大化の挙動
- * @property { 'maximum' | 'minimum' | 'normal' } defaultMode         初期表示状態
+ * @property { 'maximum' | 'minimum' | 'normal' } defaultMode         初期表示状態(スタックされていない場合)
  * @property { 'modal' | 'modaless' | 'topMost' } modal               モーダル表示状態
  * @property { 'scroll' | 'resize' | 'hidden' }   overflowX           内容コンテンツがX軸に溢れた場合
  * @property { 'scroll' | 'resize' | 'hidden' }   overflowY           内容コンテンツがY軸に溢れた場合
