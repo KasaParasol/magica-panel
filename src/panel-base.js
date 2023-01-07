@@ -168,8 +168,8 @@ export default class PanelBase extends EventTarget
             this._parent.removeEventListener('resize', this._resizeParentHandler);
             this._parent.removeEventListener('close', this._closeParentHandler);
         }
+        this._parent = val;
         if (val) {
-            this._parent = val;
             this._parent.appendChild(this);
             this._parent.addEventListener('resize', this._resizeParentHandler);
             this._parent.addEventListener('close', this._closeParentHandler);
@@ -247,6 +247,7 @@ export default class PanelBase extends EventTarget
 
     close () {
         this.parent = undefined;
+        this.children.forEach(e => e instanceof PanelBase? e.close(): void 0);
         this.dispatchEvent(new CustomEvent('close', {detail: {target: this}}));
     }
 

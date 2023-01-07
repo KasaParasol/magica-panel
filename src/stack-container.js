@@ -121,7 +121,7 @@ export default class StackContainer extends PanelBase
         if (this.root) {
             if (this._root) {
                 this._root.removeEventListener('childrenmove', this._movehandler);
-                this._root.removeEventListener('childrenmove', this._movedhandler);
+                this._root.removeEventListener('childrenmoved', this._movedhandler);
             }
             this.root.addEventListener('childrenmove', this._movehandler);
             this.root.addEventListener('childrenmoved', this._movedhandler);
@@ -179,24 +179,41 @@ export default class StackContainer extends PanelBase
         if (this.element.closest('body')) this._calcGridSize(undefined, undefined, ranges.length === 0? undefined: ranges);
     }
 
+    resizeParentHandler () {
+        if (!this.element.closest('body')) return;
+
+        let ranges = this.children.map(e => e.element.getClientRects()?.[0]?.[this.opts.direction === 'vertical'? 'height': 'width']).filter(e => e !== undefined);
+        const total = ranges.reduce((a, c) => a + c, 0);
+        const ratios = ranges.map(e => e / total);
+        const currentWidth = this.inner.getClientRects()[0][this.opts.direction === 'vertical'? 'height': 'width'] - (this.opts.separatorWidth * (this.children.length + 1));
+        ranges = ratios.map(e => Math.round(e * currentWidth));
+        ranges.pop();
+        ranges.push(currentWidth - ranges.reduce((a, c) => a + c, 0));
+        ranges = ranges.map(e => `${e}px`);
+        if (ranges.length) this._calcGridSize(undefined, undefined, ranges);
+        this.dispatchEvent(new CustomEvent('resize', {detail: {target: this}}));
+    }
+
     removeChild (val) {
-        let ranges = typeof this._lastTargetRange === 'object'? this._lastTargetRange: this.children.map(e => e.element.getClientRects()[0][this.opts.direction === 'vertical'? 'height': 'width']);
-        this._lastTargetRange = undefined;
-        const idx = this.children.indexOf(val);
-        if (!ranges[idx - 1] && ranges[idx + 1]) {
-            ranges[idx + 1] += ranges[idx] + this.opts.separatorWidth;
+        let ranges = typeof this._lastTargetRange === 'object'? this._lastTargetRange: this.children.map(e => e.element.getClientRects()?.[0]?.[this.opts.direction === 'vertical'? 'height': 'width']);
+        if (ranges) {
+            this._lastTargetRange = undefined;
+            const idx = this.children.indexOf(val);
+            if (!ranges[idx - 1] && ranges[idx + 1]) {
+                ranges[idx + 1] += ranges[idx] + this.opts.separatorWidth;
+            }
+            else if (!ranges[idx + 1] && ranges[idx - 1]) {
+                ranges[idx - 1] += ranges[idx] + this.opts.separatorWidth;
+            }
+            else if (ranges[idx + 1] && ranges[idx - 1]) {
+                const [smallIdx, largeIdx] = ranges[idx - 1] > ranges[idx + 1]? [idx + 1, idx - 1]: [idx - 1, idx + 1];
+                const ratio = ranges[smallIdx] / ranges[largeIdx];
+                const smallSize = Math.round((ranges[idx] + this.opts.separatorWidth) / 2 * ratio);
+                ranges[smallIdx] += smallSize;
+                ranges[largeIdx] += (ranges[idx] + this.opts.separatorWidth) - smallSize;
+            }
+            ranges = ranges.filter((_e, i) => i !== idx).map(e => `${e}px`);
         }
-        else if (!ranges[idx + 1] && ranges[idx - 1]) {
-            ranges[idx - 1] += ranges[idx] + this.opts.separatorWidth;
-        }
-        else if (ranges[idx + 1] && ranges[idx - 1]) {
-            const [smallIdx, largeIdx] = ranges[idx - 1] > ranges[idx + 1]? [idx + 1, idx - 1]: [idx - 1, idx + 1];
-            const ratio = ranges[smallIdx] / ranges[largeIdx];
-            const smallSize = Math.round((ranges[idx] + this.opts.separatorWidth) / 2 * ratio);
-            ranges[smallIdx] += smallSize;
-            ranges[largeIdx] += (ranges[idx] + this.opts.separatorWidth) - smallSize;
-        }
-        ranges = ranges.filter((_e, i) => i !== idx).map(e => `${e}px`);
         val.element.nextElementSibling.remove();
 
         super.removeChild(val);
@@ -205,7 +222,7 @@ export default class StackContainer extends PanelBase
             this.inner.children[0].remove();
             this.element.classList.add('empty');
         }
-        this._calcGridSize(undefined, undefined, ranges.length === 0? undefined: ranges);
+        this._calcGridSize(undefined, undefined, ranges?.length !== 0? ranges: undefined);
     }
 
     _calcGridSize (sep, pos, template) {

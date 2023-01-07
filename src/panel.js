@@ -180,6 +180,7 @@ export default class Panel extends PanelBase
                 const width = this._startrect.width + ev.pageX - this._clickstart.x - 10;
                 this.inner.style.width = `${width <= this.opts.minSize.x? this.opts.minSize.x: width >= (this.opts.maxSize?.x || Infinity)? this.opts.maxSize.x: width}px`;
             }
+            this.dispatchEvent(new CustomEvent('resize', {detail: {target: this}}));
         }
     }
 
@@ -231,6 +232,7 @@ export default class Panel extends PanelBase
         this._left = this.element.getClientRects()[0]?.left || 0;
         this.element.classList.remove('minimum');
         this.element.classList.add('maximum');
+        this.dispatchEvent(new CustomEvent('resize', {detail: {target: this}}));
     }
 
     normal (x) {
@@ -252,6 +254,7 @@ export default class Panel extends PanelBase
             this.element.style.left = `${this._left}px`;
         }
         this.dispatchEvent(new CustomEvent('normalized', {detail: {target: this}}));
+        this.dispatchEvent(new CustomEvent('resize', {detail: {target: this}}));
     }
 
     minimum () {
@@ -265,6 +268,7 @@ export default class Panel extends PanelBase
         if (!this.element.classList.contains('maximum') && !this.element.classList.contains('minimum')) {
             this.adjustWindowPosition();
         }
+        this.dispatchEvent(new CustomEvent('resize', {detail: {target: this}}));
     }
 
     changeParentHandler (evt) {
@@ -280,5 +284,6 @@ export default class Panel extends PanelBase
                 this.element.style.top = `calc(50% - ${rect.height / 2}px)`;
             }
         };
+        this.dispatchEvent(new CustomEvent('resize', {detail: {target: this}}));
     }
 }

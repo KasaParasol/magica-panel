@@ -14,23 +14,18 @@
 </head>
 <body>
     <div style="position: relative; height: 100%;" id="main">
-        <div id="stack1"></div>
-        <div id="stack2"></div>
-        <div id="sub1">
-            <article id="content1">
-                <h1>Hello, MagicaPanel!!🎉🎉🎉</h1>
-            </article>
-        </div>
-        <div id="sub2">
-            <article id="content2">
-                <h1>MDIな感じのUIライブラリを作ってます。</h1>
-            </article>
-        </div>
-        <div id="sub3">
-            <article id="content3">
-                <h1>(c) @KasaParasol</h1>
-            </article>
-        </div>
+        <article id="content1">
+            <h1>Hello, MagicaPanel!!🎉🎉🎉</h1>
+        </article>
+        <article id="content2">
+            <h1>MDIな感じのUIライブラリを作ってます。</h1>
+        </article>
+        <article id="content3">
+            <h1>(c) @KasaParasol</h1>
+        </article>
+        <article id="content4">
+            <h1>ぷぷぷぷぷぷぷ</h1>
+        </article>
     </div>
     <script src="dist/main.js"></script>
     <script>
@@ -72,7 +67,21 @@
                     modal: 'modal'
                 },
                 document.getElementById('content3')
-            )
+            ),
+            new MagicaPanel.Panel(
+                {
+                    title: 'sample! (4)'
+                },
+                new MagicaPanel.StackContainer(
+                    {direction: 'horizontal'}
+                ),
+            ),
+            new MagicaPanel.Panel(
+                {
+                    title: 'sample! (5)'
+                },
+                document.getElementById('content4')
+            ),
         );
     </script>
 </body>
