@@ -26,7 +26,6 @@ import Value from "./values";
  * @property { boolean }                          closeable           バツボタンを出現させる
  * @property { boolean }                          minimable           最小化ボタンを出現させる
  * @property { ResizeableOptions }                maximum             最大化の挙動
- * @property { 'maximum' | 'minimum' | 'normal' } defaultMode         初期表示状態(スタックされていない場合)
  * @property { 'modal' | 'modaless' | 'topMost' } modal               モーダル表示状態
  * @property { 'scroll' | 'resize' | 'hidden' }   overflowX           内容コンテンツがX軸に溢れた場合
  * @property { 'scroll' | 'resize' | 'hidden' }   overflowY           内容コンテンツがY軸に溢れた場合
