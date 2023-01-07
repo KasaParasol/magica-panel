@@ -34,7 +34,14 @@ const style = `
     height: 1.5rem;
     color: white;
     user-select:none;
-    padding-right: calc(2.5rem * 3);
+    margin-right: calc(2.5rem * 3);
+    box-sizing: content-box;
+    overflow: hidden;
+}
+
+.magica-panel-titlebar > * {
+    position: absolute;
+    width: 100%;
     text-overflow: ellipsis;
     overflow: hidden;
 }

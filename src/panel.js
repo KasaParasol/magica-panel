@@ -12,7 +12,7 @@ export default class Panel extends PanelBase
     static DEFAULT_OPTIONS = {
         type: 'panel',
         position: {x: 0, y: 0},
-        minSize: {x: 112, y: 0},
+        minSize: {x: 120, y: 0},
         defaultSize: {x: 320, y: 240},
         title: '',
         closeable: true,
@@ -48,10 +48,15 @@ export default class Panel extends PanelBase
         if (content instanceof HTMLElement) this.inner.appendChild(content);
 
         // タイトルバーを追加
-        const titlebar = (typeof opts?.title === 'object' && opts.title instanceof HTMLElement)?
-                            opts.title:
-                            document.createElement('div');
-        if (typeof opts?.title === 'string') titlebar.innerText = opts.title;
+        const titlebar = document.createElement('div');
+        if (typeof opts?.title === 'string') {
+            const span = document.createElement('span');
+            span.innerText = opts.title;
+            titlebar.appendChild(span);
+        }
+        else if (typeof opts?.title === 'object' && opts.title instanceof HTMLElement) {
+            titlebar.appendChild(opts.title);
+        }
         this.titlebar = titlebar;
         this.titlebar.draggable = true;
         this.element.insertBefore(titlebar, this.element.children[0]);
@@ -131,27 +136,31 @@ export default class Panel extends PanelBase
     _resizeAreaHandler (ev) {
         if (ev.type === 'mousedown') {
             this._clickstart = {x: ev.pageX, y: ev.pageY};
-            this._startrect = {x: this.element.clientWidth, y: this.element.clientHeight};
+            this._startrect = this.element.getClientRects()[0];
         }
         else if (ev.type === 'drag' ) {
             if (ev.screenY === 0) {
                 return;
             }
             if (ev.target.classList.contains('top')) {
-                this.element.style.top = `${this.parent.element.scrollTop + ev.pageY}px`;
-                this.inner.style.height = `${this._startrect.y + this._clickstart.y - ev.pageY - 4}px`;
+                let height = this._startrect.height + this._clickstart.y - ev.pageY - 10;
+                height = height <= this.opts.minSize.y? this.opts.minSize.y: height >= (this.opts.maxSize?.y || Infinity)? this.opts.maxSize.y: height;
+                this.element.style.top = `${this.parent.element.scrollTop + this._startrect.bottom - height - this.titlebar.clientHeight}px`;
+                this.inner.style.height = `${height}px`;
             }
             if (ev.target.classList.contains('bottom')) {
-                this.inner.style.height = `calc(${this._startrect.y + ev.pageY - this._clickstart.y - 8}px - 1.5rem)`;
+                let height = this._startrect.height + ev.pageY - this._clickstart.y - 10;
+                this.inner.style.height = `${height <= this.opts.minSize.y? this.opts.minSize.y: height >= (this.opts.maxSize?.y || Infinity)? this.opts.maxSize.y: height}px`;
             }
             if (ev.target.classList.contains('left')) {
-                this.element.style.left = `${this.parent.element.scrollLeft + ev.pageX}px`;
-                const width = this._startrect.x + this._clickstart.x - ev.pageX - 4;
-                this.inner.style.width = `${width > this.opts.minSize.x? width: this.opts.minSize.x}px`;
+                let width = this._startrect.width + this._clickstart.x - ev.pageX - 10;
+                width = width <= this.opts.minSize.x? this.opts.minSize.x: width >= (this.opts.maxSize?.x || Infinity)? this.opts.maxSize.x: width;
+                this.element.style.left = `${this.parent.element.scrollLeft + this._startrect.right - width}px`;
+                this.inner.style.width = `${width}px`;
             }
             if (ev.target.classList.contains('right')) {
-                const width = this._startrect.x + ev.pageX - this._clickstart.x - 8;
-                this.inner.style.width = `${width > this.opts.minSize.x? width: this.opts.minSize.x}px`;
+                const width = this._startrect.width + ev.pageX - this._clickstart.x - 10;
+                this.inner.style.width = `${width <= this.opts.minSize.x? this.opts.minSize.x: width >= (this.opts.maxSize?.x || Infinity)? this.opts.maxSize.x: width}px`;
             }
         }
     }

@@ -18,8 +18,8 @@ import Value from "./values";
  * @typedef PanelOptions
  *
  * @property { 'panel' }                          type                パネル種別
- * @property { CoordinationOptions }              minSize             最小ウィンドウサイズ(指定があれば)
- * @property { CoordinationOptions }              maxSize             最大ウィンドウサイズ(指定があれば)
+ * @property { CoordinationOptions }              minSize             最小ウィンドウ内コンテンツサイズ(指定があれば)
+ * @property { CoordinationOptions }              maxSize             最大ウィンドウ内コンテンツサイズ(指定があれば)
  * @property { CoordinationOptions }              position            初期位置(左上)
  * @property { CoordinationOptions }              defaultSize         初期サイズ(320x240, タイトルバー、ウィンドウ枠線含まず)
  * @property { string | HTMLElement }             title               タイトル
