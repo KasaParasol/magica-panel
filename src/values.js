@@ -184,6 +184,10 @@ const style = `
     top: unset !important;
 }
 
+.magica-panel-window.topmost {
+    z-index: 65535 !important;
+}
+
 .magica-panel-window.minimum > .magica-panel-inner {
     display: none;
 }

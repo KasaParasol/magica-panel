@@ -55,6 +55,7 @@ export default class StackContainer extends PanelBase
             this.element.appendChild(addArea);
         }
         this._movehandler = (evt) => {
+            if (evt.detail.target.opts.modal !== 'modaless') return;
             const mouseY = this.root.element.scrollTop + evt.detail.ev.pageY;
             const mouseX = this.root.element.scrollLeft + evt.detail.ev.pageX;
             const elemRect = this.element.getClientRects()[0];
@@ -79,6 +80,7 @@ export default class StackContainer extends PanelBase
         };
 
         this._movedhandler = (evt) => {
+            if (evt.detail.target.opts.modal !== 'modaless') return;
             const mouseY = this.root.element.scrollTop + evt.detail.ev.pageY;
             const mouseX = this.root.element.scrollLeft + evt.detail.ev.pageX;
             const elemRect = this.element.getClientRects()[0];

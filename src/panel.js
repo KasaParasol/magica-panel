@@ -123,8 +123,14 @@ export default class Panel extends PanelBase
         if (!this.opts.minimable) {
             minimumbutton.classList.add('deny');
         }
-
         buttonarea.insertBefore(minimumbutton, maximumbutton);
+
+        // モーダル
+        if (this.opts.modal !== 'modaless') {
+            this.element.classList.add('topmost');
+            minimumbutton.classList.add('deny');
+            maximumbutton.classList.add('deny');
+        }
     }
 
     _addResizeArea () {
