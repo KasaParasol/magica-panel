@@ -24,7 +24,7 @@
             <h1>(c) @KasaParasol</h1>
         </article>
         <article id="content4">
-            <h1>ぷぷぷぷぷぷぷ</h1>
+            <h1>テストのコンテンツです。</h1>
         </article>
     </div>
     <script src="dist/main.js"></script>
@@ -73,14 +73,14 @@
                     title: 'sample! (4)'
                 },
                 new MagicaPanel.StackContainer(
-                    {direction: 'horizontal'}
+                    {direction: 'horizontal'},
+                    new MagicaPanel.Panel(
+                        {
+                            title: 'sample! (5)'
+                        },
+                        document.getElementById('content4')
+                    ),
                 ),
-            ),
-            new MagicaPanel.Panel(
-                {
-                    title: 'sample! (5)'
-                },
-                document.getElementById('content4')
             ),
         );
     </script>

@@ -384,7 +384,7 @@ const style = `
 `;
 
 const Value = {
-    style
+    style,
 };
 
 Object.freeze(Value);

@@ -1,11 +1,11 @@
+import Value from './values';
+
 /**
  * @typedef CoordinationOptions
  *
  * @property { number } x X方向(指定があれば)
  * @property { number } y Y方向(指定があれば)
  */
-
-import Value from "./values";
 
 /**
  * @typedef ResizeableOptions
@@ -35,7 +35,7 @@ import Value from "./values";
 
 /**
  * @typedef  TabOptions
- * 
+ *
  * @property { '' }
  */
 
@@ -67,8 +67,8 @@ export default class PanelBase extends EventTarget
     static _initialized = false;
 
     /**
-     * 
-     * @param { HTMLElement } element 
+     *
+     * @param { HTMLElement } element
      * @param { PanelOptions | StackPanelOptions | BaseContainerOptions } opts
      * @param { (PanelBase | HTMLElement)[] } children
      */
@@ -76,38 +76,45 @@ export default class PanelBase extends EventTarget
         super();
 
         this.outer = undefined;
-        this._changeParentHandler = (ev) => {
+        this._changeParentHandler = ev => {
             this.changeParentHandler(ev);
         };
-        this._childMovedHandler = (ev) => {
+
+        this._childMovedHandler = ev => {
             this.childMovedHandler(ev);
         };
-        this._childMoveHandler = (ev) => {
+
+        this._childMoveHandler = ev => {
             this.childMoveHandler(ev);
         };
-        this._childMinimizedHandler = (ev) => {
+
+        this._childMinimizedHandler = ev => {
             this.childMinimizedHandler(ev);
         };
-        this._childNormalizedHandler = (ev) => {
+
+        this._childNormalizedHandler = ev => {
             this.childNormalizedHandler(ev);
-        }
-        this._resizeParentHandler = (ev) => {
+        };
+
+        this._resizeParentHandler = ev => {
             this.resizeParentHandler(ev);
-        }
+        };
 
         this._opts = opts;
         this._element = element;
         // 自身要素を初期化する
-        Array.from(element.children).forEach(e => e.remove());
+        for (const child of Array.from(element.children)) {
+            child.remove();
+        }
 
         this._inner = document.createElement('div');
-        this._element.appendChild(this._inner);
+        this._element.append(this._inner);
         this._element.addEventListener('mousedown', () => this.active());
 
         this._children = [];
-        children.forEach(e => {
-            if (e instanceof PanelBase) e.parent = this;
-        });
+        for (const child of children) if (child instanceof PanelBase) {
+            child.parent = this;
+        }
 
         /**
          * @type { PanelBase | undefined }
@@ -144,8 +151,9 @@ export default class PanelBase extends EventTarget
     static init () {
         if (!PanelBase._initialized) {
             PanelBase.appendStyleElements();
-            // TODO: 
+            // TODO:
         }
+
         PanelBase._initialized = true;
     }
 
@@ -155,7 +163,7 @@ export default class PanelBase extends EventTarget
     static appendStyleElements () {
         const style = document.createElement('style');
         style.textContent = Value.style;
-        document.head.appendChild(style);
+        document.head.append(style);
     }
 
     get parent () {
@@ -164,17 +172,19 @@ export default class PanelBase extends EventTarget
 
     set parent (val) {
         if (this._parent) {
-            this._parent.removeChild(this);
+            this._parent.remove(this);
             this._parent.removeEventListener('resize', this._resizeParentHandler);
             this._parent.removeEventListener('close', this._closeParentHandler);
         }
+
         this._parent = val;
         if (val) {
-            this._parent.appendChild(this);
+            this._parent.append(this);
             this._parent.addEventListener('resize', this._resizeParentHandler);
             this._parent.addEventListener('close', this._closeParentHandler);
             this.dispatchEvent(new CustomEvent('changeparent', {detail: {target: this}}));
         }
+
         this.changeParentHandler(undefined);
     }
 
@@ -185,36 +195,24 @@ export default class PanelBase extends EventTarget
         this.close();
     }
 
-    /**
-     * 
-     * @param {{rect: DOMRect, ev: DragEvent}} rect
-     */
-    childMoveHandler (evt) {
+    childMoveHandler () {
     }
 
-    /**
-     * 
-     * @param {{rect: DOMRect, ev: DragEvent}} rect
-     */
-    childMovedHandler (evt) {
+    childMovedHandler () {
     }
 
-    /**
-     * 
-     * @param {{rect: DOMRect, ev: DragEvent}} rect
-     */
-    childMinimizedHandler (evt) {
+    childMinimizedHandler () {
     }
 
-    childNormalizedHandler (evt) {
+    childNormalizedHandler () {
     }
 
-    changeParentHandler (evt) {
+    changeParentHandler () {
         this.dispatchEvent(new CustomEvent('changeparent', {detail: {target: this}}));
     }
 
-    removeChild (val) {
-        this._inner.removeChild(val.outer? val.outer: val.element);
+    remove (val) {
+        (val.outer ?? val.element).remove();
         this._children = this._children.filter(e => e !== val);
         val.removeEventListener('move', this._childMoveHandler);
         val.removeEventListener('remove', this._childMovedHandler);
@@ -223,21 +221,18 @@ export default class PanelBase extends EventTarget
         this.removeEventListener('changeparent', val._changeParentHandler);
     }
 
-    appendChild (val, ref) {
+    append (val, ref) {
         const next = ref?.nextElementSibling;
         if (next) {
-            this._inner.insertBefore(val.outer? val.outer: val.element, next);
-        }
-        else {
-            this._inner.appendChild(val.outer? val.outer: val.element);
-        }
-        if (next) {
+            this._inner.insertBefore(val.outer ?? val.element, next);
             const idx = this.children.map(e => e.element).findIndex(e => e.nextElementSibling === ref);
             this._children.splice(idx + 1, 0, val);
         }
         else {
+            this._inner.append(val.outer ?? val.element);
             this._children.push(val);
         }
+
         val.addEventListener('move', this._childMoveHandler);
         val.addEventListener('moved', this._childMovedHandler);
         val.addEventListener('minimized', this._childMinimizedHandler);
@@ -247,7 +242,10 @@ export default class PanelBase extends EventTarget
 
     close () {
         this.parent = undefined;
-        this.children.forEach(e => e instanceof PanelBase? e.close(): void 0);
+        for (const child of this.children) if (child instanceof PanelBase) {
+            child.close();
+        }
+
         this.dispatchEvent(new CustomEvent('close', {detail: {target: this}}));
     }
 
@@ -257,13 +255,14 @@ export default class PanelBase extends EventTarget
 
     modifyZIndex (active) {
         const windows = this._children.filter(e => e.opts.type === 'panel');
-        if (windows.find(e => e === active)) {
+        if (windows.includes(active)) {
             const targets = windows.filter(e => e !== active);
             let idx = 0;
             for (; idx < targets.length; idx++) {
                 const target = targets[idx];
                 target.element.style.zIndex = `${idx}`;
             }
+
             active.element.style.zIndex = `${idx}`;
         }
     }

@@ -1,17 +1,42 @@
 {
-  "name": "magica-panel",
-  "version": "0.0.2",
-  "description": "MDIなUIを構築します。",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build:js-dev": "webpack --mode development"
-  },
-  "author": "KasaParasol",
-  "license": "MIT",
-  "devDependencies": {
-    "cpx": "^1.5.0",
-    "webpack": "^5.75.0",
-    "webpack-cli": "^5.0.1"
-  }
+    "name": "magica-panel",
+    "version": "0.0.2",
+    "description": "MDIなUIを構築します。",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build:js-dev": "webpack --mode development",
+        "lint": "xo"
+    },
+    "author": "KasaParasol",
+    "license": "MIT",
+    "devDependencies": {
+        "cpx": "^1.5.0",
+        "webpack": "^5.75.0",
+        "webpack-cli": "^5.0.1",
+        "xo": "^0.53.1"
+    },
+    "xo": {
+        "env": "browser",
+        "space": 4,
+        "rules": {
+            "import/extensions": "off",
+            "import/no-anonymous-default-export": "off",
+            "n/file-extension-in-import": "off",
+            "brace-style": ["warn", "stroustrup"],
+            "comma-dangle": ["error", "always-multiline"],
+            "space-before-function-paren": ["error", "always"],
+            "unicorn/prevent-abbreviations": "off",
+            "space-infix-ops": ["warn"],
+            "curly": ["warn"],
+            "no-bitwise": "off",
+            "unicorn/prefer-number-properties": ["error", {"checkInfinity": false}],
+            "unicorn/empty-brace-spaces": "off",
+            "unicorn/no-nested-ternary": "off",
+            "default-case": "off"
+        },
+        "ignores": [
+            "webpack.config.js"
+        ]
+    }
 }
