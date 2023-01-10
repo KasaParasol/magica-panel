@@ -13,7 +13,7 @@ jobs:
     name: Node.js
     runs-on: ${{ matrix.os }}
     strategy:
-    fail-fast: false
+      fail-fast: false
     matrix:
       node-version: [^18]
       os: [ubuntu-latest]
@@ -36,7 +36,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-        node-version: ^18
+          node-version: ^18
         cache: npm
       - name: Upgrade npm
         run: npm install --global npm@^8.18
