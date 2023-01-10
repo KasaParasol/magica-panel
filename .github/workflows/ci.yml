@@ -11,18 +11,15 @@ on:
 jobs:
   nodejs:
     name: Node.js
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-    matrix:
-      node-version: [^18]
-      os: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v3
       - name: setup nodejs
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ^18
           cache: npm
       - name: Upgrade npm
         run: npm install --global npm@^8.18
