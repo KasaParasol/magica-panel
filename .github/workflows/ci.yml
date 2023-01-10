@@ -37,7 +37,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ^18
-        cache: npm
+          cache: npm
       - name: Upgrade npm
         run: npm install --global npm@^8.18
       - run: npm install --no-audit
