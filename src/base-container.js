@@ -1,4 +1,4 @@
-import PanelBase from './panel-base';
+import PanelBase from './panel-base.js';
 
 /**
  * すべての親となる要素。ツリー上に1つ一番親にのみ利用できる。
@@ -40,23 +40,23 @@ export default class BaseContainer extends PanelBase
      */
     _setResizeEvemt (elem) {
         this._elemrect = {x: elem.clientWidth, y: elem.clientHeight};
-        if (window.ResizeObserver) {
+        if (PanelBase.window.ResizeObserver) {
             const ro = new ResizeObserver(() => {
                 if (elem.clientWidth !== this._elemrect.x
                 || elem.clientHeight !== this._element.y) {
                     this._elemrect = {x: elem.clientWidth, y: elem.clientHeight};
-                    this.dispatchEvent(new CustomEvent('resize', {detail: this._elemrect}));
+                    this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: this._elemrect}));
                 }
             });
             ro.observe(elem);
         }
         else {
             const f = () => {
-                window.requestAnimationFrame(() => {
+                PanelBase.window.requestAnimationFrame(() => {
                     if (elem.clientWidth !== this._elemrect.x
                     || elem.clientHeight !== this._element.y) {
                         this._elemrect = {x: elem.clientWidth, y: elem.clientHeight};
-                        this.dispatchEvent(new CustomEvent('resize', {detail: this._elemrect}));
+                        this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: this._elemrect}));
                     }
 
                     f();
@@ -108,11 +108,11 @@ export default class BaseContainer extends PanelBase
             }
         }
 
-        this.dispatchEvent(new CustomEvent('childrenmove', {detail: {...evt.detail, target: evt.target}}));
+        this.dispatchEvent(new PanelBase.CustomEvent('childrenmove', {detail: {...evt.detail, target: evt.target}}));
     }
 
     childMovedHandler (evt) {
-        this.dispatchEvent(new CustomEvent('childrenmoved', {detail: {...evt.detail, target: evt.target}}));
+        this.dispatchEvent(new PanelBase.CustomEvent('childrenmoved', {detail: {...evt.detail, target: evt.target}}));
     }
 
     childMinimizedHandler (evt) {

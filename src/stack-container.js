@@ -1,4 +1,4 @@
-import PanelBase from './panel-base';
+import PanelBase from './panel-base.js';
 
 /**
  * 垂直または水平方向への整列やタブ切り替えによるパネルのスイッチ(3個のうちいずれか1つ)を提供します。
@@ -27,7 +27,7 @@ export default class StackContainer extends PanelBase
      * @param { (StackContainer | Panel)[] } children 内容コンテンツ
      */
     constructor (opts = StackContainer.DEFAULT_OPTIONS, ...children) {
-        super(document.createElement('div'), Object.assign(opts, StackContainer.DEFAULT_OPTIONS, {...opts}), ...children);
+        super(PanelBase.document.createElement('div'), Object.assign(opts, StackContainer.DEFAULT_OPTIONS, {...opts}), ...children);
 
         this._calcGridSize(undefined, undefined, this.opts.template);
         this.element.classList.add('magica-panel-stack-wrapper');
@@ -49,7 +49,7 @@ export default class StackContainer extends PanelBase
                 this.element.classList.add('empty');
             }
 
-            const addArea = document.createElement('div');
+            const addArea = PanelBase.document.createElement('div');
             addArea.classList.add('magica-panel-stack-separator', 'empty');
             if (typeof this.opts.panelAddArea === 'object') {
                 addArea.append(this.opts.panelAddArea);
@@ -214,7 +214,7 @@ export default class StackContainer extends PanelBase
             this._calcGridSize(undefined, undefined, ranges);
         }
 
-        this.dispatchEvent(new CustomEvent('resize', {detail: {target: this}}));
+        this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: {target: this}}));
     }
 
     remove (val) {
@@ -289,7 +289,7 @@ export default class StackContainer extends PanelBase
     }
 
     _generateSeparator () {
-        const elem = document.createElement('div');
+        const elem = PanelBase.document.createElement('div');
         elem.classList.add('magica-panel-stack-separator');
         if (this.opts.reproportionable === false) {
             elem.classList.add('disable');
@@ -297,7 +297,7 @@ export default class StackContainer extends PanelBase
 
         elem.style[this.opts.direction === 'vertical'? 'height': 'width'] = `${this.opts.separatorWidth}px`;
         elem.draggable = true;
-        const inner = document.createElement('div');
+        const inner = PanelBase.document.createElement('div');
         inner.classList.add('magica-panel-stack-separator-droparea');
         elem.append(inner);
         elem.addEventListener('dragstart', ev => {

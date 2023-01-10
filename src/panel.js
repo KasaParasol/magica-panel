@@ -1,5 +1,5 @@
-import PanelBase from './panel-base';
-import BaseContainer from './base-container';
+import PanelBase from './panel-base.js';
+import BaseContainer from './base-container.js';
 
 /**
  * UIを格納するパネルエリア。ウィンドウ表示・ほかパネルへの格納が可能
@@ -34,7 +34,7 @@ export default class Panel extends PanelBase
      * @param { HTMLElement | PanelBase } content 内容コンテンツ
      */
     constructor (opts = Panel.DEFAULT_OPTIONS, content) {
-        super(document.createElement('div'), Object.assign(opts, Panel.DEFAULT_OPTIONS, {...opts}), content);
+        super(PanelBase.document.createElement('div'), Object.assign(opts, Panel.DEFAULT_OPTIONS, {...opts}), content);
 
         this.element.classList.add('magica-panel-window');
         this.inner.className = 'magica-panel-inner';
@@ -56,9 +56,9 @@ export default class Panel extends PanelBase
         }
 
         // タイトルバーを追加
-        const titlebar = document.createElement('div');
+        const titlebar = PanelBase.document.createElement('div');
         if (typeof opts?.title === 'string') {
-            const span = document.createElement('span');
+            const span = PanelBase.document.createElement('span');
             span.textContent = opts.title;
             titlebar.append(span);
         }
@@ -86,12 +86,12 @@ export default class Panel extends PanelBase
         this._addResizeArea();
 
         // ボタンエリアを追加
-        const buttonarea = document.createElement('div');
+        const buttonarea = PanelBase.document.createElement('div');
         buttonarea.classList.add('magica-panel-button-area');
         this.element.append(buttonarea);
 
         // 閉じるボタンを追加
-        const closebutton = document.createElement('button');
+        const closebutton = PanelBase.document.createElement('button');
         closebutton.textContent = '×';
         closebutton.classList.add('magica-panel-button', 'close');
         if (!this.opts.closeable) {
@@ -105,7 +105,7 @@ export default class Panel extends PanelBase
         buttonarea.append(closebutton);
 
         // 最大化/復元ボタンを追加
-        const maximumbutton = document.createElement('button');
+        const maximumbutton = PanelBase.document.createElement('button');
         maximumbutton.textContent = '❐';
         maximumbutton.classList.add('magica-panel-button', 'maximum');
         maximumbutton.addEventListener('click', () => {
@@ -124,7 +124,7 @@ export default class Panel extends PanelBase
         closebutton.before(maximumbutton);
 
         // 最小化/復元ボタンを追加
-        const minimumbutton = document.createElement('button');
+        const minimumbutton = PanelBase.document.createElement('button');
         minimumbutton.textContent = '-';
         minimumbutton.classList.add('magica-panel-button', 'minimum');
         minimumbutton.addEventListener('click', () => {
@@ -154,7 +154,7 @@ export default class Panel extends PanelBase
         // リサイズ領域を追加
         this.edges = {};
         for (const target of [['top'], ['bottom'], ['left'], ['right'], ['top', 'left'], ['top', 'right'], ['bottom', 'left'], ['bottom', 'right']]) {
-            const edge = document.createElement('div');
+            const edge = PanelBase.document.createElement('div');
             edge.classList.add('magica-panel-edge', ...target);
             this.element.append(edge);
             edge.draggable = 'true';
@@ -200,7 +200,7 @@ export default class Panel extends PanelBase
                 this.inner.style.width = `${width <= this.opts.minSize.x? this.opts.minSize.x: width >= (this.opts.maxSize?.x || Infinity)? this.opts.maxSize.x: width}px`;
             }
 
-            this.dispatchEvent(new CustomEvent('resize', {detail: {target: this}}));
+            this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: {target: this}}));
         }
     }
 
@@ -224,13 +224,13 @@ export default class Panel extends PanelBase
 
                 this.element.style.left = `${(this.parent.element.scrollLeft + ev.pageX) - this._clickstart.x}px`;
                 this.element.style.top = `${(this.parent.element.scrollTop + ev.pageY) - this._clickstart.y}px`;
-                this.dispatchEvent(new CustomEvent('move', {detail: {rect: this.element.getClientRects()[0], ev, target: this}}));
+                this.dispatchEvent(new PanelBase.CustomEvent('move', {detail: {rect: this.element.getClientRects()[0], ev, target: this}}));
                 break;
             }
 
             case 'dragend': {
                 this.adjustWindowPosition();
-                this.dispatchEvent(new CustomEvent('moved', {detail: {rect: this.element.getClientRects()[0], ev, target: this}}));
+                this.dispatchEvent(new PanelBase.CustomEvent('moved', {detail: {rect: this.element.getClientRects()[0], ev, target: this}}));
                 break;
             }
         }
@@ -261,7 +261,7 @@ export default class Panel extends PanelBase
         this._left = this.element.getClientRects()[0]?.left || 0;
         this.element.classList.remove('minimum');
         this.element.classList.add('maximum');
-        this.dispatchEvent(new CustomEvent('resize', {detail: {target: this}}));
+        this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: {target: this}}));
     }
 
     normal (x) {
@@ -286,15 +286,15 @@ export default class Panel extends PanelBase
             this.element.style.left = `${this._left}px`;
         }
 
-        this.dispatchEvent(new CustomEvent('normalized', {detail: {target: this}}));
-        this.dispatchEvent(new CustomEvent('resize', {detail: {target: this}}));
+        this.dispatchEvent(new PanelBase.CustomEvent('normalized', {detail: {target: this}}));
+        this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: {target: this}}));
     }
 
     minimum () {
         this._left = this.element.getClientRects()[0]?.left || 0;
         this.element.classList.remove('maximum');
         this.element.classList.add('minimum');
-        this.dispatchEvent(new CustomEvent('minimized', {detail: {target: this}}));
+        this.dispatchEvent(new PanelBase.CustomEvent('minimized', {detail: {target: this}}));
     }
 
     resizeParentHandler (_evt) {
@@ -302,13 +302,13 @@ export default class Panel extends PanelBase
             this.adjustWindowPosition();
         }
 
-        this.dispatchEvent(new CustomEvent('resize', {detail: {target: this}}));
+        this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: {target: this}}));
     }
 
     changeParentHandler (evt) {
         super.changeParentHandler(evt);
         if (this.opts.modal === 'modal') {
-            this.outer = document.createElement('div');
+            this.outer = PanelBase.document.createElement('div');
             this.outer.classList.add('magica-panel-modal-blocker');
             this.element.parentElement.insertBefore(this.outer, this.element);
             this.outer.append(this.element);
@@ -319,6 +319,6 @@ export default class Panel extends PanelBase
             }
         }
 
-        this.dispatchEvent(new CustomEvent('resize', {detail: {target: this}}));
+        this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: {target: this}}));
     }
 }

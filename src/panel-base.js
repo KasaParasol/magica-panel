@@ -1,4 +1,4 @@
-import Value from './values';
+import Value from './values.js';
 
 /**
  * @typedef CoordinationOptions
@@ -66,6 +66,10 @@ export default class PanelBase extends EventTarget
 {
     static _initialized = false;
 
+    static window;
+    static document;
+    static CustomEvent;
+
     /**
      *
      * @param { HTMLElement } element
@@ -107,7 +111,7 @@ export default class PanelBase extends EventTarget
             child.remove();
         }
 
-        this._inner = document.createElement('div');
+        this._inner = PanelBase.document.createElement('div');
         this._element.append(this._inner);
         this._element.addEventListener('mousedown', () => this.active());
 
@@ -120,7 +124,8 @@ export default class PanelBase extends EventTarget
          * @type { PanelBase | undefined }
          */
         this._parent = undefined;
-        PanelBase.init();
+        if (!PanelBase._initialized) PanelBase.init();
+        PanelBase._initialized = true;
     }
 
     /**
@@ -149,21 +154,16 @@ export default class PanelBase extends EventTarget
      * UIを構築するための初期化メソッド
      */
     static init () {
-        if (!PanelBase._initialized) {
-            PanelBase.appendStyleElements();
-            // TODO:
-        }
-
-        PanelBase._initialized = true;
+        PanelBase.appendStyleElements();
     }
 
     /**
      * スタイルをヘッダに追加します。
      */
     static appendStyleElements () {
-        const style = document.createElement('style');
+        const style = PanelBase.document.createElement('style');
         style.textContent = Value.style;
-        document.head.append(style);
+        PanelBase.document.head.append(style);
     }
 
     get parent () {
@@ -182,7 +182,7 @@ export default class PanelBase extends EventTarget
             this._parent.append(this);
             this._parent.addEventListener('resize', this._resizeParentHandler);
             this._parent.addEventListener('close', this._closeParentHandler);
-            this.dispatchEvent(new CustomEvent('changeparent', {detail: {target: this}}));
+            this.dispatchEvent(new PanelBase.CustomEvent('changeparent', {detail: {target: this}}));
         }
 
         this.changeParentHandler(undefined);
@@ -208,7 +208,7 @@ export default class PanelBase extends EventTarget
     }
 
     changeParentHandler () {
-        this.dispatchEvent(new CustomEvent('changeparent', {detail: {target: this}}));
+        this.dispatchEvent(new PanelBase.CustomEvent('changeparent', {detail: {target: this}}));
     }
 
     remove (val) {
@@ -246,7 +246,7 @@ export default class PanelBase extends EventTarget
             child.close();
         }
 
-        this.dispatchEvent(new CustomEvent('close', {detail: {target: this}}));
+        this.dispatchEvent(new PanelBase.CustomEvent('close', {detail: {target: this}}));
     }
 
     active () {
@@ -266,4 +266,15 @@ export default class PanelBase extends EventTarget
             active.element.style.zIndex = `${idx}`;
         }
     }
+}
+
+try {
+    PanelBase.window = window;
+    PanelBase.document = document;
+    PanelBase.CustomEvent = CustomEvent;
+}
+catch {
+    PanelBase.window = undefined;
+    PanelBase.document = undefined;
+    PanelBase.CustomEvent = undefined;
 }
