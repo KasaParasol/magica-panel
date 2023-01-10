@@ -1,13 +1,13 @@
 name: Install and test MagicaPanel
 on:
   push:
-  branches:
-    - master
-  pull_request:
-    paths-ignore:
-      - "*.md"
-      - "attachment/**"
-      - "LICENCE"
+    branches:
+      - master
+    pull_request:
+      paths-ignore:
+        - "*.md"
+        - "attachment/**"
+        - "LICENCE"
 jobs:
   nodejs:
     name: Node.js
