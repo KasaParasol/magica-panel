@@ -1,5 +1,4 @@
 name: Install and test MagicaPanel
-
 on:
   push:
   branches:
@@ -29,6 +28,7 @@ jobs:
         run: npm install --global npm@^8.18
       - run: npm install --no-audit
       - run: npm run test:ci
+
   xo:
     name: Lint
     runs-on: ubuntu-latest
