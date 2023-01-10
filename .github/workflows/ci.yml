@@ -9,8 +9,8 @@ on:
         - "attachment/**"
         - "LICENCE"
 jobs:
-  nodejs:
-    name: Node.js
+  test:
+    name: Test
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
