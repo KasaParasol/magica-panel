@@ -1,6 +1,4 @@
-import PanelBase from "./panel-base";
-import StackContainer from "./stack-container";
-import Panel from "./panel";
+import PanelBase from './panel-base.js';
 
 /**
  * すべての親となる要素。ツリー上に1つ一番親にのみ利用できる。
@@ -14,7 +12,7 @@ export default class BaseContainer extends PanelBase
     static DEFAULT_OPTIONS = {
         type: 'base',
         overflowX: 'scroll',
-        overflowY: 'scroll'
+        overflowY: 'scroll',
     };
 
     /**
@@ -42,27 +40,29 @@ export default class BaseContainer extends PanelBase
      */
     _setResizeEvemt (elem) {
         this._elemrect = {x: elem.clientWidth, y: elem.clientHeight};
-        if (window.ResizeObserver) {
+        if (PanelBase.window.ResizeObserver) {
             const ro = new ResizeObserver(() => {
                 if (elem.clientWidth !== this._elemrect.x
                 || elem.clientHeight !== this._element.y) {
                     this._elemrect = {x: elem.clientWidth, y: elem.clientHeight};
-                    this.dispatchEvent(new CustomEvent('resize', {detail: this._elemrect}));
+                    this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: this._elemrect}));
                 }
             });
             ro.observe(elem);
         }
         else {
             const f = () => {
-                window.requestAnimationFrame(() => {
+                PanelBase.window.requestAnimationFrame(() => {
                     if (elem.clientWidth !== this._elemrect.x
                     || elem.clientHeight !== this._element.y) {
                         this._elemrect = {x: elem.clientWidth, y: elem.clientHeight};
-                        this.dispatchEvent(new CustomEvent('resize', {detail: this._elemrect}));
+                        this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: this._elemrect}));
                     }
+
                     f();
                 });
             };
+
             f();
         }
     }
@@ -89,30 +89,41 @@ export default class BaseContainer extends PanelBase
             const rects = this.children.map(e => e.element.getClientRects()[0]);
             if (this.opts.overflowX === 'scroll') {
                 const maxX = Math.max(...rects.map(e => e.right + this.element.scrollLeft));
-                if (currentRect.right < maxX) this.inner.style.width = `${maxX - this.inner.clientLeft}px`;
-                else if (currentRect.right > maxX) this.inner.style.width = '';
-
+                if (currentRect.right < maxX) {
+                    this.inner.style.width = `${maxX - this.inner.clientLeft}px`;
+                }
+                else if (currentRect.right > maxX) {
+                    this.inner.style.width = '';
+                }
             }
+
             if (this.opts.overflowY === 'scroll') {
                 const maxY = Math.max(...rects.map(e => e.bottom + this.element.scrollTop));
-                if (currentRect.bottom < maxY) this.inner.style.height = `${maxY - this.inner.clientTop}px`;
-                else if (currentRect.bottom > maxY) this.inner.style.height = '';
+                if (currentRect.bottom < maxY) {
+                    this.inner.style.height = `${maxY - this.inner.clientTop}px`;
+                }
+                else if (currentRect.bottom > maxY) {
+                    this.inner.style.height = '';
+                }
             }
         }
-        this.dispatchEvent(new CustomEvent('childrenmove', {detail: {...evt.detail, target: evt.target}}));
+
+        this.dispatchEvent(new PanelBase.CustomEvent('childrenmove', {detail: {...evt.detail, target: evt.target}}));
     }
 
     childMovedHandler (evt) {
-        this.dispatchEvent(new CustomEvent('childrenmoved', {detail: {...evt.detail, target: evt.target}}));
+        this.dispatchEvent(new PanelBase.CustomEvent('childrenmoved', {detail: {...evt.detail, target: evt.target}}));
     }
 
     childMinimizedHandler (evt) {
+        // eslint-disable-next-line unicorn/no-array-for-each
         this.children.filter(e => e.element.classList.contains('minimum')).forEach((value, counter) => {
             value.element.style.left = `${evt.target.element.getClientRects()[0].width * counter}px`;
-        })
+        });
     }
 
     childNormalizedHandler (evt) {
+        // eslint-disable-next-line unicorn/no-array-for-each
         this.children.filter(e => e.element.classList.contains('minimum')).forEach((value, counter) => {
             value.element.style.left = `${evt.target.element.getClientRects()[0].width * counter}px`;
         });

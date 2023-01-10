@@ -1,4 +1,4 @@
-import PanelBase from "./panel-base";
+import PanelBase from './panel-base.js';
 
 /**
  * 垂直または水平方向への整列やタブ切り替えによるパネルのスイッチ(3個のうちいずれか1つ)を提供します。
@@ -11,15 +11,14 @@ export default class StackContainer extends PanelBase
     static DEFAULT_OPTIONS = {
         type: 'stack',
         direction: 'vertical',
-        overflow: 'scroll',
         reproportionable: true,
-        dockable: 'full',
+        dockable: true,
         separatorWidth: 2,
         additionalClassName: '',
         attributes: [],
         template: undefined,
-        panelAddArea: undefined
-    }
+        panelAddArea: undefined,
+    };
 
     /**
      * UIを格納するパネルエリア。ウィンドウ・ペイン表示が可能
@@ -28,13 +27,19 @@ export default class StackContainer extends PanelBase
      * @param { (StackContainer | Panel)[] } children 内容コンテンツ
      */
     constructor (opts = StackContainer.DEFAULT_OPTIONS, ...children) {
-        super(document.createElement('div'), Object.assign(opts, StackContainer.DEFAULT_OPTIONS, {...opts}), ...children);
+        super(PanelBase.document.createElement('div'), Object.assign(opts, StackContainer.DEFAULT_OPTIONS, {...opts}), ...children);
 
         this._calcGridSize(undefined, undefined, this.opts.template);
         this.element.classList.add('magica-panel-stack-wrapper');
         this.inner.classList.add('magica-panel-stack-inner');
-        if (this.opts.direction === 'vertical') this.element.classList.add('vertical');
-        if (this.opts.direction === 'horizontal') this.element.classList.add('horizontal');
+        if (this.opts.direction === 'vertical') {
+            this.element.classList.add('vertical');
+        }
+
+        if (this.opts.direction === 'horizontal') {
+            this.element.classList.add('horizontal');
+        }
+
         if (typeof this.opts.direction === 'object') {
             this.element.classList.add('tab');
         }
@@ -44,29 +49,34 @@ export default class StackContainer extends PanelBase
                 this.element.classList.add('empty');
             }
 
-            const addArea = document.createElement('div');
-            addArea.classList.add('magica-panel-stack-add', 'empty');
+            const addArea = PanelBase.document.createElement('div');
+            addArea.classList.add('magica-panel-stack-separator', 'empty');
             if (typeof this.opts.panelAddArea === 'object') {
-                addArea.appendChild(this.opts.panelAddArea);
+                addArea.append(this.opts.panelAddArea);
             }
             else {
-                addArea.innerText = this.opts.panelAddArea? this.opts.panelAddArea: this.opts.direction === 'vertical'? '▤': '▥';
+                addArea.textContent = this.opts.panelAddArea ?? this.opts.direction === 'vertical'? '▤' : '▥';
             }
+
             this.addareas.push(addArea);
-            this.element.appendChild(addArea);
+            this.element.append(addArea);
         }
-        this._movehandler = (evt) => {
+
+        this._movehandler = evt => {
+            if (evt.detail.target.opts.modal !== 'modaless') return;
+
             const mouseY = this.root.element.scrollTop + evt.detail.ev.pageY;
             const mouseX = this.root.element.scrollLeft + evt.detail.ev.pageX;
             const elemRect = this.element.getClientRects()[0];
             if (elemRect.top < mouseY && mouseY < elemRect.bottom
             && elemRect.left < mouseX && mouseX < elemRect.right
-            && evt.detail.target.opts.maximum.enable === true && this.opts.dockable == 'full') {
+            && evt.detail.target.opts.maximum.enable === true && this.opts.dockable === true) {
                 this.element.classList.add('hover');
             }
             else {
                 this.element.classList.remove('hover');
             }
+
             for (const addarea of this.addareas) {
                 const rect = addarea.getClientRects()[0];
                 if (rect && rect.top < evt.detail.ev.clientY && evt.detail.ev.clientY < rect.bottom
@@ -79,13 +89,15 @@ export default class StackContainer extends PanelBase
             }
         };
 
-        this._movedhandler = (evt) => {
+        this._movedhandler = evt => {
+            if (evt.detail.target.opts.modal !== 'modaless') return;
+
             const mouseY = this.root.element.scrollTop + evt.detail.ev.pageY;
             const mouseX = this.root.element.scrollLeft + evt.detail.ev.pageX;
             const elemRect = this.element.getClientRects()[0];
             if (elemRect.top < mouseY && mouseY < elemRect.bottom
             && elemRect.left < mouseX && mouseX < elemRect.right
-            && evt.detail.target.opts.maximum.enable === true && this.opts.dockable == 'full') {
+            && evt.detail.target.opts.maximum.enable === true && this.opts.dockable === true) {
                 for (const addarea of this.addareas) {
                     if (evt.detail.target.element.previousElementSibling === addarea.parentElement
                     || evt.detail.target.element.nextElementSibling === addarea.parentElement
@@ -93,6 +105,7 @@ export default class StackContainer extends PanelBase
                         addarea.classList.remove('hover');
                         continue;
                     }
+
                     const rect = addarea.getClientRects()[0];
                     if (rect && rect.top < evt.detail.ev.clientY && evt.detail.ev.clientY < rect.bottom
                     && rect.left < evt.detail.ev.clientX && evt.detail.ev.clientX < rect.right) {
@@ -100,20 +113,21 @@ export default class StackContainer extends PanelBase
                         this._lastTargetRange = evt.detail.target.element.getClientRects()[0][this.opts.direction === 'vertical'? 'height': 'width'];
                         evt.detail.target.parent = this;
                     }
+
                     addarea.classList.remove('hover');
                 }
+
                 this.element.classList.remove('hover');
             }
         };
     }
 
     get parent () {
-        return super.parent
+        return super.parent;
     }
 
     set parent (val) {
         super.parent = val;
-        this.changeParentHandler(undefined);
     }
 
     changeParentHandler (evt) {
@@ -121,20 +135,21 @@ export default class StackContainer extends PanelBase
         if (this.root) {
             if (this._root) {
                 this._root.removeEventListener('childrenmove', this._movehandler);
-                this._root.removeEventListener('childrenmove', this._movedhandler);
+                this._root.removeEventListener('childrenmoved', this._movedhandler);
             }
+
             this.root.addEventListener('childrenmove', this._movehandler);
             this.root.addEventListener('childrenmoved', this._movedhandler);
             this._root = this.root;
         }
     }
 
-    appendChild (val) {
+    append (val) {
         if (!this.addareas) this.addareas = [];
         if (this.inner.children.length === 0) {
             const sep = this._generateSeparator();
             this.addareas.push(sep.children[0]);
-            this.inner.appendChild(sep);
+            this.inner.append(sep);
         }
 
         let ranges = [];
@@ -144,7 +159,7 @@ export default class StackContainer extends PanelBase
 
             if (this._lastref) {
                 const idx = this.children.map(e => e.element).indexOf(this._lastref.previousElementSibling);
-                const insertTargetRange = (ranges[idx] || 0) + (ranges[idx + 1] || 0) / 2;
+                const insertTargetRange = ((ranges[idx] || 0) + (ranges[idx + 1] || 0)) / 2;
                 const insertRange = Math.min(insertTargetRange, windowRange) - this.opts.separatorWidth;
                 if (~idx && ranges[idx + 1]) {
                     const [smallIdx, largeIdx] = ranges[idx] > ranges[idx + 1]? [idx + 1, idx]: [idx, idx + 1];
@@ -153,18 +168,20 @@ export default class StackContainer extends PanelBase
                     ranges[smallIdx] -= smallSize;
                     ranges[largeIdx] -= (insertRange - smallSize);
                 }
-                else if (!~idx) {
-                    ranges[idx + 1] -= insertRange;
-                }
-                else {
+                else if (~idx) {
                     ranges[idx] -= insertRange;
                 }
+                else {
+                    ranges[idx + 1] -= insertRange;
+                }
+
                 ranges.splice(idx + 1, 0, insertRange - this.opts.separatorWidth);
             }
+
             ranges = ranges.map(e => `${e}px`);
         }
 
-        super.appendChild(val, this._lastref);
+        super.append(val, this._lastref);
         if (val.maximum) val.maximum();
 
         const sep = this._generateSeparator();
@@ -173,53 +190,81 @@ export default class StackContainer extends PanelBase
             this.inner.insertBefore(sep, val.element.nextElementSibling);
         }
         else {
-            this.inner.appendChild(sep);
+            this.inner.append(sep);
         }
+
         this.element.classList.remove('empty');
-        if (this.element.closest('body')) this._calcGridSize(undefined, undefined, ranges.length === 0? undefined: ranges);
+        if (this.element.closest('body')) {
+            this._calcGridSize(undefined, undefined, ranges.length === 0? undefined: ranges);
+        }
     }
 
-    removeChild (val) {
-        let ranges = typeof this._lastTargetRange === 'object'? this._lastTargetRange: this.children.map(e => e.element.getClientRects()[0][this.opts.direction === 'vertical'? 'height': 'width']);
-        this._lastTargetRange = undefined;
-        const idx = this.children.indexOf(val);
-        if (!ranges[idx - 1] && ranges[idx + 1]) {
-            ranges[idx + 1] += ranges[idx] + this.opts.separatorWidth;
+    resizeParentHandler () {
+        if (!this.element.closest('body')) return;
+
+        let ranges = this.children.map(e => e.element.getClientRects()?.[0]?.[this.opts.direction === 'vertical'? 'height': 'width']).filter(e => e !== undefined);
+        const total = ranges.reduce((a, c) => a + c, 0);
+        const ratios = ranges.map(e => e / total);
+        const currentWidth = this.inner.getClientRects()[0][this.opts.direction === 'vertical'? 'height': 'width'] - (this.opts.separatorWidth * (this.children.length + 1));
+        ranges = ratios.map(e => Math.round(e * currentWidth));
+        ranges.pop();
+        ranges.push(currentWidth - ranges.reduce((a, c) => a + c, 0));
+        ranges = ranges.map(e => `${e}px`);
+        if (ranges.length > 0) {
+            this._calcGridSize(undefined, undefined, ranges);
         }
-        else if (!ranges[idx + 1] && ranges[idx - 1]) {
-            ranges[idx - 1] += ranges[idx] + this.opts.separatorWidth;
+
+        this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: {target: this}}));
+    }
+
+    remove (val) {
+        let ranges = typeof this._lastTargetRange === 'object'? this._lastTargetRange: this.children.map(e => e.element.getClientRects()?.[0]?.[this.opts.direction === 'vertical'? 'height': 'width']);
+        if (ranges) {
+            this._lastTargetRange = undefined;
+            const idx = this.children.indexOf(val);
+            if (!ranges[idx - 1] && ranges[idx + 1]) {
+                ranges[idx + 1] += ranges[idx] + this.opts.separatorWidth;
+            }
+            else if (!ranges[idx + 1] && ranges[idx - 1]) {
+                ranges[idx - 1] += ranges[idx] + this.opts.separatorWidth;
+            }
+            else if (ranges[idx + 1] && ranges[idx - 1]) {
+                const [smallIdx, largeIdx] = ranges[idx - 1] > ranges[idx + 1]? [idx + 1, idx - 1]: [idx - 1, idx + 1];
+                const ratio = ranges[smallIdx] / ranges[largeIdx];
+                const smallSize = Math.round((ranges[idx] + this.opts.separatorWidth) / 2 * ratio);
+                ranges[smallIdx] += smallSize;
+                ranges[largeIdx] += (ranges[idx] + this.opts.separatorWidth) - smallSize;
+            }
+
+            ranges = ranges.filter((_e, i) => i !== idx).map(e => `${e}px`);
         }
-        else if (ranges[idx + 1] && ranges[idx - 1]) {
-            const [smallIdx, largeIdx] = ranges[idx - 1] > ranges[idx + 1]? [idx + 1, idx - 1]: [idx - 1, idx + 1];
-            const ratio = ranges[smallIdx] / ranges[largeIdx];
-            const smallSize = Math.round((ranges[idx] + this.opts.separatorWidth) / 2 * ratio);
-            ranges[smallIdx] += smallSize;
-            ranges[largeIdx] += (ranges[idx] + this.opts.separatorWidth) - smallSize;
-        }
-        ranges = ranges.filter((_e, i) => i !== idx).map(e => `${e}px`);
+
         val.element.nextElementSibling.remove();
 
-        super.removeChild(val);
+        super.remove(val);
         if (this.inner.children.length === 1) {
             this.addareas.filter(e => e !== this.inner.children[0].children[0]);
             this.inner.children[0].remove();
             this.element.classList.add('empty');
         }
-        this._calcGridSize(undefined, undefined, ranges.length === 0? undefined: ranges);
+
+        this._calcGridSize(undefined, undefined, ranges?.length === 0? undefined: ranges);
     }
 
     _calcGridSize (sep, pos, template) {
         const target = this.opts.direction === 'vertical'? 'gridTemplateRows': 'gridTemplateColumns';
-        const currentSizes = template || this.inner.style[target].split(' ').filter(e => e !== '').filter((_e, i ) => i % 2 !== 0);
+        const currentSizes = template || this.inner.style[target].split(' ').filter(e => e !== '').filter((_e, i) => i % 2 !== 0);
         if (this.children.length === 0) {
             this.inner.style[target] = '';
             return;
         }
+
         if (this.children.length === 1) {
             currentSizes[0] = '1fr';
         }
+
         if (sep && sep.previousElementSibling && sep.nextElementSibling && pos !== undefined) {
-            const bros = Array.from(this.inner.children).filter(e => !e.classList.contains('magica-panel-stack-add'));
+            const bros = Array.from(this.inner.children).filter(e => !e.classList.contains('magica-panel-stack-separator'));
             const prevIdx = bros.indexOf(sep.previousElementSibling);
             const nextIdx = bros.indexOf(sep.nextElementSibling);
             const prevRect = sep.previousElementSibling.getClientRects()[0];
@@ -234,28 +279,38 @@ export default class StackContainer extends PanelBase
                 currentSizes[nextIdx] = `${nextRect.right - pos - 1}px`;
             }
         }
-        for (let idx = 0; idx < this.children.length; idx++) {
-            if (currentSizes[idx] === undefined) currentSizes.push('1fr');
+
+        for (let idx = 0; idx < this.children.length; idx++) if (currentSizes[idx] === undefined) {
+            currentSizes.push('1fr');
         }
+
         currentSizes.splice(this.children.length);
         this.inner.style[target] = `${this.opts.separatorWidth}px ${currentSizes.join(` ${this.opts.separatorWidth}px `)} ${this.opts.separatorWidth}px`;
     }
 
     _generateSeparator () {
-        const elem = document.createElement ('div');
-        elem.classList.add('magica-panel-stack-add');
+        const elem = PanelBase.document.createElement('div');
+        elem.classList.add('magica-panel-stack-separator');
+        if (this.opts.reproportionable === false) {
+            elem.classList.add('disable');
+        }
+
         elem.style[this.opts.direction === 'vertical'? 'height': 'width'] = `${this.opts.separatorWidth}px`;
         elem.draggable = true;
-        const inner = document.createElement ('div');
-        inner.classList.add('magica-panel-stack-add-droparea');
-        elem.appendChild(inner);
-        elem.addEventListener('drag', (ev) => {
-            if (ev.screenY === 0) {
-                return;
-            }
+        const inner = PanelBase.document.createElement('div');
+        inner.classList.add('magica-panel-stack-separator-droparea');
+        elem.append(inner);
+        elem.addEventListener('dragstart', ev => {
+            ev.dataTransfer.setDragImage(new Image(), 0, 0);
+        });
+
+        elem.addEventListener('drag', ev => {
+            if (ev.screenY === 0 || this.opts.reproportionable === false) return;
+
             this._calcGridSize(ev.target, this.opts.direction === 'vertical'? ev.pageY : ev.pageX);
         });
-        return elem
+
+        return elem;
     }
 
     /**
@@ -272,6 +327,7 @@ export default class StackContainer extends PanelBase
         while (parent?.parent !== undefined) {
             parent = parent.parent;
         }
+
         return parent;
     }
 }

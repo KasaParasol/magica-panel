@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('node:path');
 
 module.exports = {
     entry: './src/index.js',
@@ -8,9 +8,9 @@ module.exports = {
         library: {
             name: 'MagicaPanel',
             type: 'var',
-            export: 'default'
-        }
+            export: 'default',
+        },
     },
     mode: 'development',
-    devtool: 'inline-source-map'
+    devtool: 'inline-source-map',
 };

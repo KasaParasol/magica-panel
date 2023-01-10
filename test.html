@@ -14,23 +14,18 @@
 </head>
 <body>
     <div style="position: relative; height: 100%;" id="main">
-        <div id="stack1"></div>
-        <div id="stack2"></div>
-        <div id="sub1">
-            <article id="content1">
-                <h1>Hello, MagicaPanel!!🎉🎉🎉</h1>
-            </article>
-        </div>
-        <div id="sub2">
-            <article id="content2">
-                <h1>MDIな感じのUIライブラリを作ってます。</h1>
-            </article>
-        </div>
-        <div id="sub3">
-            <article id="content3">
-                <h1>(c) @KasaParasol</h1>
-            </article>
-        </div>
+        <article id="content1">
+            <h1>Hello, MagicaPanel!!🎉🎉🎉</h1>
+        </article>
+        <article id="content2">
+            <h1>MDIな感じのUIライブラリを作ってます。</h1>
+        </article>
+        <article id="content3">
+            <h1>(c) @KasaParasol</h1>
+        </article>
+        <article id="content4">
+            <h1>テストのコンテンツです。</h1>
+        </article>
     </div>
     <script src="dist/main.js"></script>
     <script>
@@ -40,10 +35,17 @@
             new MagicaPanel.StackContainer(
                 {
                     direction: 'vertical',
-                    template: ['86px', '1fr']
+                    template: ['86px', '1fr'],
+                    dockable: false
                 },
                 new MagicaPanel.Panel(
-                    {title: 'sample!'},
+                    {
+                        title: 'sample!',
+                        maximum: {
+                            enable: false,
+                            showTitlebar: false
+                        }
+                    },
                     document.getElementById('content1')
                 ),
                 new MagicaPanel.StackContainer(
@@ -51,13 +53,35 @@
                 ),
             ),
             new MagicaPanel.Panel(
-                {title: 'sample! (2)'},
+                {
+                    title: 'sample! (2)',
+                    closeable: false
+                },
                 document.getElementById('content2')
             ),
             new MagicaPanel.Panel(
-                {title: 'sample! (3)'},
+                {
+                    title: 'sample! (3)',
+                    maxSize: {x: 500, y: 500},
+                    minSize: {x: 200, y: 200},
+                    modal: 'modal'
+                },
                 document.getElementById('content3')
-            )
+            ),
+            new MagicaPanel.Panel(
+                {
+                    title: 'sample! (4)'
+                },
+                new MagicaPanel.StackContainer(
+                    {direction: 'horizontal'},
+                    new MagicaPanel.Panel(
+                        {
+                            title: 'sample! (5)'
+                        },
+                        document.getElementById('content4')
+                    ),
+                ),
+            ),
         );
     </script>
 </body>

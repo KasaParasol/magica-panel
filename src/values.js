@@ -34,9 +34,25 @@ const style = `
     height: 1.5rem;
     color: white;
     user-select:none;
-    padding-right: calc(2.5rem * 3);
+    margin-right: calc(2.5rem * 3);
+    box-sizing: content-box;
+    overflow: hidden;
+}
+
+.magica-panel-window.maximum > .magica-panel-titlebar.maximum-disable {
+    display: none;
+}
+
+.magica-panel-window.maximum > .magica-panel-titlebar.maximum-disable ~ .magica-panel-button-area {
+    display: none;
+}
+
+.magica-panel-titlebar > * {
+    position: absolute;
+    width: 100%;
     text-overflow: ellipsis;
     overflow: hidden;
+    white-space: nowrap;
 }
 
 .magica-panel-inner {
@@ -154,15 +170,33 @@ const style = `
     height: calc(1.5rem + 4px);
 }
 
-.magica-panel-window.maximum .magica-panel-inner {
+.magica-panel-window.maximum > .magica-panel-inner {
     width: calc(100% - 2px) !important;
     height: calc(100% - 1.5rem - 6px) !important;
+}
+
+.magica-panel-window.maximum > .magica-panel-titlebar.maximum-disable ~ .magica-panel-inner {
+    height: calc(100% - 2px) !important;
 }
 
 .magica-panel-window.minimum {
     width: 186px;
     bottom: 0 !important;
     top: unset !important;
+}
+
+.magica-panel-window.topmost {
+    z-index: 65535 !important;
+}
+
+.magica-panel-modal-blocker {
+    background: rgba(0,0,0,.5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 65535 !important;
 }
 
 .magica-panel-window.minimum > .magica-panel-inner {
@@ -189,6 +223,10 @@ const style = `
     width: 2.5rem;
     font-size: 1rem;
     background: midnightblue;
+}
+
+.magica-panel-button.deny {
+    display: none;
 }
 
 .magica-panel-button.close {
@@ -221,27 +259,27 @@ const style = `
     display: grid;
 }
 
-.magica-panel-stack-add {
+.magica-panel-stack-separator {
     background-color: midnightblue;
     color: white;
 }
 
-.magica-panel-stack-add {
+.magica-panel-stack-separator {
     background-color: midnightblue;
     color: white;
     z-index: 100;
     position: relative;
 }
 
-.magica-panel-stack-wrapper.horizontal > .magica-panel-stack-inner > .magica-panel-stack-add {
+.magica-panel-stack-wrapper.horizontal > .magica-panel-stack-inner > .magica-panel-stack-separator {
     background: midnightblue;
 }
 
-.magica-panel-stack-wrapper.vertical > .magica-panel-stack-inner > .magica-panel-stack-add {
+.magica-panel-stack-wrapper.vertical > .magica-panel-stack-inner > .magica-panel-stack-separator {
     background: midnightblue;
 }
 
-.magica-panel-stack-add.empty {
+.magica-panel-stack-separator.empty {
     position: absolute;
     margin: auto;
     top: 50%;
@@ -255,69 +293,69 @@ const style = `
     display: none;
 }
 
-.magica-panel-stack-add-droparea {
+.magica-panel-stack-separator-droparea {
     position: absolute;
     display: none;
     background: rgba(25,25,112, 0.3);
 }
 
-.magica-panel-stack-wrapper.horizontal > .magica-panel-stack-inner > .magica-panel-stack-add .magica-panel-stack-add-droparea {
+.magica-panel-stack-wrapper.horizontal > .magica-panel-stack-inner > .magica-panel-stack-separator .magica-panel-stack-separator-droparea {
     height: 100%;
     width: 10rem;
 }
 
-.magica-panel-stack-wrapper.horizontal > .magica-panel-stack-inner > .magica-panel-stack-add .magica-panel-stack-add-droparea {
+.magica-panel-stack-wrapper.horizontal > .magica-panel-stack-inner > .magica-panel-stack-separator .magica-panel-stack-separator-droparea {
     left: -5rem;
 }
 
-.magica-panel-stack-wrapper.horizontal > .magica-panel-stack-inner > .magica-panel-stack-add:first-of-type .magica-panel-stack-add-droparea {
+.magica-panel-stack-wrapper.horizontal > .magica-panel-stack-inner > .magica-panel-stack-separator:first-of-type .magica-panel-stack-separator-droparea {
     left: 0;
 }
 
-.magica-panel-stack-wrapper.horizontal > .magica-panel-stack-inner > .magica-panel-stack-add:last-of-type .magica-panel-stack-add-droparea {
+.magica-panel-stack-wrapper.horizontal > .magica-panel-stack-inner > .magica-panel-stack-separator:last-of-type .magica-panel-stack-separator-droparea {
     right: 0;
     left: unset;
 }
 
-.magica-panel-stack-wrapper.vertical > .magica-panel-stack-inner > .magica-panel-stack-add .magica-panel-stack-add-droparea {
+.magica-panel-stack-wrapper.vertical > .magica-panel-stack-inner > .magica-panel-stack-separator .magica-panel-stack-separator-droparea {
     width: 100%;
     height: 10rem;
 }
 
-.magica-panel-stack-wrapper.vertical > .magica-panel-stack-inner > .magica-panel-stack-add .magica-panel-stack-add-droparea {
+.magica-panel-stack-wrapper.vertical > .magica-panel-stack-inner > .magica-panel-stack-separator .magica-panel-stack-separator-droparea {
     top: -5rem;
 }
 
-.magica-panel-stack-wrapper.vertical > .magica-panel-stack-inner > .magica-panel-stack-add:first-of-type .magica-panel-stack-add-droparea {
+.magica-panel-stack-wrapper.vertical > .magica-panel-stack-inner > .magica-panel-stack-separator:first-of-type .magica-panel-stack-separator-droparea {
     top: 0;
 }
 
-.magica-panel-stack-wrapper.vertical > .magica-panel-stack-inner > .magica-panel-stack-add:last-of-type .magica-panel-stack-add-droparea {
+.magica-panel-stack-wrapper.vertical > .magica-panel-stack-inner > .magica-panel-stack-separator:last-of-type .magica-panel-stack-separator-droparea {
     bottom: 0;
     top: unset;
 }
 
-.magica-panel-stack-wrapper.vertical > .magica-panel-stack-inner > .magica-panel-stack-add:NOT(.hover):NOT(:first-of-type):NOT(:last-of-type):hover {
+.magica-panel-stack-wrapper.vertical > .magica-panel-stack-inner > .magica-panel-stack-separator:NOT(.hover):NOT(.disable):NOT(:first-of-type):NOT(:last-of-type):hover {
     cursor: ns-resize;
 }
 
-.magica-panel-stack-wrapper.horizontal > .magica-panel-stack-inner > .magica-panel-stack-add:NOT(.hover):NOT(:first-of-type):NOT(:last-of-type):hover {
+.magica-panel-stack-wrapper.horizontal > .magica-panel-stack-inner > .magica-panel-stack-separator:NOT(.hover):NOT(.disable):NOT(:first-of-type):NOT(:last-of-type):hover {
     cursor: ew-resize;
 }
 
-.magica-panel-stack-wrapper.hover .magica-panel-stack-add:NOT(.empty) {
+.magica-panel-stack-wrapper.hover .magica-panel-stack-separator:NOT(.empty) {
     display: block;
 }
 
-.magica-panel-stack-wrapper.hover.empty .magica-panel-stack-add.empty {
+.magica-panel-stack-wrapper.hover.empty .magica-panel-stack-separator.empty {
     display: block;
 }
 
-.magica-panel-stack-wrapper.hover .magica-panel-stack-add-droparea {
+.magica-panel-stack-wrapper.hover .magica-panel-stack-separator-droparea {
     display: block;
 }
 
-.magica-panel-stack-add.hover {
+.magica-panel-stack-separator.hover {
     opacity: 1;
 }
 
@@ -346,7 +384,7 @@ const style = `
 `;
 
 const Value = {
-    style
+    style,
 };
 
 Object.freeze(Value);
