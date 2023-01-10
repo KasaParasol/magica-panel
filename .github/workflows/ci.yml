@@ -3,12 +3,12 @@ name: Install and test MagicaPanel
 on:
   push:
   branches:
-  - master
+    - master
   pull_request:
     paths-ignore:
-    - "*.md"
-    - "attachment/**"
-    - "LICENCE"
+      - "*.md"
+      - "attachment/**"
+      - "LICENCE"
 jobs:
   nodejs:
     name: Node.js
@@ -19,26 +19,26 @@ jobs:
       node-version: [^18]
       os: [ubuntu-latest]
     steps:
-    - uses: actions/checkout@v3
-    - name: setup nodejs
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: npm
-    - name: Upgrade npm
-      run: npm install --global npm@^8.18
-    - run: npm install --no-audit
-    - run: npm run test:ci
+      - uses: actions/checkout@v3
+      - name: setup nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - name: Upgrade npm
+        run: npm install --global npm@^8.18
+      - run: npm install --no-audit
+      - run: npm run test:ci
   xo:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-      node-version: ^18
-      cache: npm
-    - name: Upgrade npm
-      run: npm install --global npm@^8.18
-    - run: npm install --no-audit
-    - run: npm run lint
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+        node-version: ^18
+        cache: npm
+      - name: Upgrade npm
+        run: npm install --global npm@^8.18
+      - run: npm install --no-audit
+      - run: npm run lint
