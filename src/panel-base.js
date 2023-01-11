@@ -215,7 +215,7 @@ export default class PanelBase extends EventTarget
         (val.outer ?? val.element).remove();
         this._children = this._children.filter(e => e !== val);
         val.removeEventListener('move', this._childMoveHandler);
-        val.removeEventListener('remove', this._childMovedHandler);
+        val.removeEventListener('moved', this._childMovedHandler);
         val.removeEventListener('minimized', this._childMinimizedHandler);
         val.removeEventListener('normalized', this._childNormalizedHandler);
         this.removeEventListener('changeparent', val._changeParentHandler);
