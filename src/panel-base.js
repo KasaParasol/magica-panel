@@ -215,7 +215,7 @@ export default class PanelBase extends EventTarget
         (val.outer ?? val.element).remove();
         this._children = this._children.filter(e => e !== val);
         val.removeEventListener('move', this._childMoveHandler);
-        val.removeEventListener('remove', this._childMovedHandler);
+        val.removeEventListener('moved', this._childMovedHandler);
         val.removeEventListener('minimized', this._childMinimizedHandler);
         val.removeEventListener('normalized', this._childNormalizedHandler);
         this.removeEventListener('changeparent', val._changeParentHandler);
@@ -256,7 +256,7 @@ export default class PanelBase extends EventTarget
     modifyZIndex (active) {
         const windows = this._children.filter(e => e.opts.type === 'panel');
         if (windows.includes(active)) {
-            const targets = windows.filter(e => e !== active);
+            const targets = windows.filter(e => e !== active).sort((a, b) => Number(a.element.style.zIndex ?? '0') - Number(b.element.style.zIndex ?? '0'));
             let idx = 0;
             for (; idx < targets.length; idx++) {
                 const target = targets[idx];

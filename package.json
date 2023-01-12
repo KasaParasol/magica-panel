@@ -57,7 +57,8 @@
             "unicorn/empty-brace-spaces": "off",
             "unicorn/no-nested-ternary": "off",
             "default-case": "off",
-            "guard-for-in": "off"
+            "guard-for-in": "off",
+            "no-implicit-coercion": "off"
         },
         "ignores": [
             "webpack.config.js"
