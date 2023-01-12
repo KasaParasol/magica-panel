@@ -428,3 +428,84 @@ test('append › 要素を挿入できる。', t => {
     t.is(elems.join(', '), 'content-f, content-h, content-g');
 });
 
+test('active › 親要素のmodifyZIndexを呼び出す', t => {
+    PanelBase.window = t.context.data.window;
+    PanelBase.document = t.context.data.document;
+    PanelBase.CustomEvent = t.context.data.window.CustomEvent;
+    const document = t.context.data.document;
+
+    const child = new PanelBase(document.querySelector('#content-f'), {});
+    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'}, child);
+
+    let counter = 0;
+    instance.modifyZIndex = () => {
+        counter++;
+    };
+
+    child.active();
+
+    t.is(counter, 1);
+});
+
+test('modifyZIndex › アクティブとする要素を指定して最前面にできる。', t => {
+    PanelBase.window = t.context.data.window;
+    PanelBase.document = t.context.data.document;
+    PanelBase.CustomEvent = t.context.data.window.CustomEvent;
+    const document = t.context.data.document;
+
+    const child1 = new PanelBase(document.querySelector('#content-f'), {type: 'panel'});
+    const child2 = new PanelBase(document.querySelector('#content-g'), {type: 'panel'});
+    const child3 = new PanelBase(document.querySelector('#content-h'), {type: 'panel'});
+
+    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'}, child1, child2, child3);
+
+    instance.modifyZIndex(child2);
+
+    // 特に指定がない場合、子要素の格納降順で表に出る
+    const str = instance.children.sort((a, b) => Number(a.element.style.zIndex ?? '0') - Number(b.element.style.zIndex ?? '0')).map(e => e.element.id).join(', ');
+
+    t.is(str, 'content-f, content-h, content-g');
+});
+
+test('modifyZIndex › 最前面に指定するとき、他要素の並び順は維持する', t => {
+    PanelBase.window = t.context.data.window;
+    PanelBase.document = t.context.data.document;
+    PanelBase.CustomEvent = t.context.data.window.CustomEvent;
+    const document = t.context.data.document;
+
+    const child1 = new PanelBase(document.querySelector('#content-f'), {type: 'panel'});
+    const child2 = new PanelBase(document.querySelector('#content-g'), {type: 'panel'});
+    const child3 = new PanelBase(document.querySelector('#content-h'), {type: 'panel'});
+
+    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'}, child1, child2, child3);
+
+    instance.modifyZIndex(child1);
+    instance.modifyZIndex(child2);
+
+    // 特に指定がない場合、子要素の格納降順で表に出る
+    const str = instance.children.sort((a, b) => Number(a.element.style.zIndex ?? '0') - Number(b.element.style.zIndex ?? '0')).map(e => e.element.id).join(', ');
+
+    t.is(str, 'content-h, content-f, content-g');
+});
+
+test('modifyZIndex › type が panel でないものは除外', t => {
+    PanelBase.window = t.context.data.window;
+    PanelBase.document = t.context.data.document;
+    PanelBase.CustomEvent = t.context.data.window.CustomEvent;
+    const document = t.context.data.document;
+
+    const child1 = new PanelBase(document.querySelector('#content-f'), {type: 'panel'});
+    const child2 = new PanelBase(document.querySelector('#content-g'), {type: 'panel'});
+    const child3 = new PanelBase(document.querySelector('#content-h'), {type: 'stack'});
+
+    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'}, child1, child2, child3);
+
+    instance.modifyZIndex(child1);
+    instance.modifyZIndex(child2);
+
+    // 特に指定がない場合、子要素の格納降順で表に出る
+    const str = instance.children.filter(e => e.element.style.zIndex !== '').map(e => e.element.id).join(', ');
+
+    t.is(str, 'content-f, content-g');
+});
+
