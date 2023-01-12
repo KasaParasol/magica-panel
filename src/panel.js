@@ -51,7 +51,7 @@ export default class Panel extends PanelBase
             this._inner.style.height = `${opts.defaultSize.y}px`;
         }
 
-        if (content instanceof HTMLElement) {
+        if (content instanceof PanelBase.HTMLElement) {
             this.inner.append(content);
         }
 
@@ -62,7 +62,7 @@ export default class Panel extends PanelBase
             span.textContent = opts.title;
             titlebar.append(span);
         }
-        else if (typeof opts?.title === 'object' && opts.title instanceof HTMLElement) {
+        else if (typeof opts?.title === 'object' && opts.title instanceof PanelBase.HTMLElement) {
             titlebar.append(opts.title);
         }
 
@@ -79,7 +79,7 @@ export default class Panel extends PanelBase
         this.titlebar.addEventListener('drag', ev => this._moveTitlebarHandler(ev));
         this.titlebar.addEventListener('dragend', ev => this._moveTitlebarHandler(ev));
         this.titlebar.addEventListener('dragstart', ev => {
-            ev.dataTransfer.setDragImage(new Image(), 0, 0);
+            ev.dataTransfer.setDragImage(new PanelBase.Image(), 0, 0);
             ev.dataTransfer.setData('text/plain', 'panel');
         }, false);
 

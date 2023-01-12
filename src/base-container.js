@@ -40,25 +40,24 @@ export default class BaseContainer extends PanelBase
      */
     _setResizeEvemt (elem) {
         this._elemrect = {x: elem.clientWidth, y: elem.clientHeight};
+        const dispatcher = () => {
+            if (elem.clientWidth !== this._elemrect.x
+            || elem.clientHeight !== this._elemrect.y) {
+                this._elemrect = {x: elem.clientWidth, y: elem.clientHeight};
+                this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: this._elemrect}));
+            }
+        };
+
         if (PanelBase.window.ResizeObserver) {
-            const ro = new ResizeObserver(() => {
-                if (elem.clientWidth !== this._elemrect.x
-                || elem.clientHeight !== this._element.y) {
-                    this._elemrect = {x: elem.clientWidth, y: elem.clientHeight};
-                    this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: this._elemrect}));
-                }
+            const ro = new PanelBase.window.ResizeObserver(() => {
+                dispatcher();
             });
             ro.observe(elem);
         }
         else {
             const f = () => {
                 PanelBase.window.requestAnimationFrame(() => {
-                    if (elem.clientWidth !== this._elemrect.x
-                    || elem.clientHeight !== this._element.y) {
-                        this._elemrect = {x: elem.clientWidth, y: elem.clientHeight};
-                        this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: this._elemrect}));
-                    }
-
+                    dispatcher();
                     f();
                 });
             };
