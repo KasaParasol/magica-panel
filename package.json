@@ -8,7 +8,7 @@
         "build:js-dev": "webpack --mode development",
         "lint": "xo",
         "test": "c8 -r html ava --verbose",
-        "test:ci": "c8 ava --verbose"
+        "test:cui": "c8 ava --verbose"
     },
     "author": "KasaParasol",
     "license": "MIT",
