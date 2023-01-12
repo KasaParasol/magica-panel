@@ -188,9 +188,9 @@ test('(set) parent › 親要素を変更した際に`changeparent`イベント�
     const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'});
 
     const emitLog = [];
-    child.addEventListener('changeparent', (ev) => {
+    child.addEventListener('changeparent', ev => {
         emitLog.push(ev.detail.target);
-    })
+    });
 
     child.parent = instance;
 
@@ -217,7 +217,6 @@ test('(set) parent › 親要素を`undefine`→`Panel`に変更した際にイ�
         addEventListenerLog.push({t, h, that: this});
         oldFunc.call(this, t, h);
     };
-
 
     const appendCache = instance.append;
     const appendLog = [];
@@ -266,7 +265,6 @@ test('(set) parent › 親要素をに変更した際に既存のイベントが
         oldFunc.call(this, t, h);
     };
 
-
     const removeCache = instance.remove;
     const removeLog = [];
     instance.remove = function (v) {
@@ -304,7 +302,7 @@ test('closeParentHandler › closeを呼び出す', t => {
     let counter = 0;
     child.close = () => {
         counter++;
-    }
+    };
 
     instance.close();
 
@@ -327,19 +325,19 @@ test('remove / append › 親子要素に紐付けられたイベントをすべ
 
     instance._childMovedHandler = () => {
         counter++;
-    }
+    };
 
     instance._childMinimizedHandler = () => {
         counter++;
-    }
+    };
 
     instance._childNormalizedHandler = () => {
         counter++;
-    }
+    };
 
     child._changeParentHandler = () => {
         counter++;
-    }
+    };
 
     instance.append(child);
 
@@ -406,23 +404,23 @@ test('append › 要素を挿入できる。', t => {
     PanelBase.CustomEvent = t.context.data.window.CustomEvent;
     const document = t.context.data.document;
 
-    const seps_1 = document.createElement('div');
+    const sepS1 = document.createElement('div');
     const child1 = new PanelBase(document.querySelector('#content-f'), {});
-    const sep1_2 = document.createElement('div');
+    const sep12 = document.createElement('div');
     const child2 = new PanelBase(document.querySelector('#content-g'), {});
-    const sep2_l = document.createElement('div');
+    const sep2L = document.createElement('div');
     const child3 = new PanelBase(document.querySelector('#content-h'), {});
     const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'});
 
-    instance.inner.append(seps_1);
+    instance.inner.append(sepS1);
     instance.append(child1);
-    instance.inner.append(sep1_2);
+    instance.inner.append(sep12);
     instance.append(child2);
-    instance.inner.append(sep2_l);
-    instance.append(child3, sep1_2);
+    instance.inner.append(sep2L);
+    instance.append(child3, sep12);
 
-    const ids = instance.children.map(e => e.element.id).filter(e => e);
-    const elems = Array.from(instance.inner.children).map(e => e.id).filter(e => e);
+    const ids = instance.children.map(e => e.element.id).filter(e => !!e);
+    const elems = Array.from(instance.inner.children).map(e => e.id).filter(e => !!e);
 
     t.is(ids.join(', '), 'content-f, content-h, content-g');
     t.is(elems.join(', '), 'content-f, content-h, content-g');
