@@ -3,7 +3,7 @@ const path = require('node:path');
 module.exports = env => ({
     entry: './src/index.js',
     output: {
-        path: env.mode === 'demo' ? path.resolve('./demo') : path.resolve('./dist'),
+        path: env.mode === 'demo' ? path.resolve('./docs') : path.resolve('./dist'),
         filename: 'main.js',
         library: {
             name: 'MagicaPanel',
