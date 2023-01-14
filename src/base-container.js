@@ -114,17 +114,17 @@ export default class BaseContainer extends PanelBase
         this.dispatchEvent(new PanelBase.CustomEvent('childrenmoved', {detail: {...evt.detail, target: evt.target}}));
     }
 
-    childMinimizedHandler (evt) {
+    childMinimizedHandler () {
         // eslint-disable-next-line unicorn/no-array-for-each
         this.children.filter(e => e.element.classList.contains('minimum')).forEach((value, counter) => {
-            value.element.style.left = `${evt.target.element.getClientRects()[0].width * counter}px`;
+            value.element.style.left = `${value.element.getClientRects()[0].width * counter}px`;
         });
     }
 
-    childNormalizedHandler (evt) {
+    childNormalizedHandler () {
         // eslint-disable-next-line unicorn/no-array-for-each
         this.children.filter(e => e.element.classList.contains('minimum')).forEach((value, counter) => {
-            value.element.style.left = `${evt.target.element.getClientRects()[0].width * counter}px`;
+            value.element.style.left = `${value.element.getClientRects()[0].width * counter}px`;
         });
     }
 }
