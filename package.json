@@ -62,7 +62,7 @@
             "no-implicit-coercion": "off"
         },
         "ignores": [
-            "webpack.config.js"
+            "/demo"
         ]
     }
 }
