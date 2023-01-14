@@ -7,8 +7,7 @@ module.exports = env => ({
         filename: 'main.js',
         library: {
             name: 'MagicaPanel',
-            type: 'var',
-            export: 'default',
+            type: 'umd',
         },
     },
     mode: 'development',
