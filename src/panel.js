@@ -77,7 +77,11 @@ export default class Panel extends PanelBase
 
         this.titlebar.addEventListener('mousedown', ev => this._moveTitlebarHandler(ev));
         this.titlebar.addEventListener('touchstart', ev => this._moveTitlebarHandler(ev));
-        this.titlebar.addEventListener('touchmove', ev => this._moveTitlebarHandler(ev));
+        this.titlebar.addEventListener('touchmove', ev => {
+            this._moveTitlebarHandler(ev);
+            ev.preventDefault();
+        });
+
         this.titlebar.addEventListener('touchend', ev => this._moveTitlebarHandler(ev));
         this.titlebar.addEventListener('drag', ev => this._moveTitlebarHandler(ev));
         this.titlebar.addEventListener('dragend', ev => this._moveTitlebarHandler(ev));
@@ -163,7 +167,11 @@ export default class Panel extends PanelBase
             edge.draggable = 'true';
             edge.addEventListener('mousedown', ev => this._resizeAreaHandler(ev));
             edge.addEventListener('touchstart', ev => this._resizeAreaHandler(ev));
-            edge.addEventListener('touchmove', ev => this._resizeAreaHandler(ev));
+            edge.addEventListener('touchmove', ev => {
+                this._resizeAreaHandler(ev);
+                ev.preventDefault();
+            });
+
             edge.addEventListener('drag', ev => this._resizeAreaHandler(ev));
             edge.addEventListener('dragstart', ev => ev.dataTransfer.setDragImage(new Image(), 0, 0), false);
             this.edges[target] = edge;
