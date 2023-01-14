@@ -65,8 +65,8 @@ export default class StackContainer extends PanelBase
         this._movehandler = evt => {
             if (evt.detail.target.opts.modal !== 'modaless') return;
 
-            const mouseY = this.root.element.scrollTop + (evt.detail.ev.pageY || evt.detail.ev.touches[0].pageY);
-            const mouseX = this.root.element.scrollLeft + (evt.detail.ev.pageX || evt.detail.ev.touches[0].pageX);
+            const mouseY = this.root.element.scrollTop + (evt.detail.ev.pageY ?? evt.detail.ev.touches[0].pageY);
+            const mouseX = this.root.element.scrollLeft + (evt.detail.ev.pageX ?? evt.detail.ev.touches[0].pageX);
             const elemRect = this.element.getClientRects()[0];
             if (elemRect.top < mouseY && mouseY < elemRect.bottom
             && elemRect.left < mouseX && mouseX < elemRect.right
@@ -92,8 +92,8 @@ export default class StackContainer extends PanelBase
         this._movedhandler = evt => {
             if (evt.detail.target.opts.modal !== 'modaless') return;
 
-            const mouseY = this.root.element.scrollTop + (evt.detail.ev.pageY || evt.detail.ev.touches[0].pageY);
-            const mouseX = this.root.element.scrollLeft + (evt.detail.ev.pageX || evt.detail.ev.touches[0].pageX);
+            const mouseY = this.root.element.scrollTop + (evt.detail.ev.pageY ?? evt.detail.ev.touches[0].pageY);
+            const mouseX = this.root.element.scrollLeft + (evt.detail.ev.pageX ?? evt.detail.ev.touches[0].pageX);
             const elemRect = this.element.getClientRects()[0];
             if (elemRect.top < mouseY && mouseY < elemRect.bottom
             && elemRect.left < mouseX && mouseX < elemRect.right
@@ -155,11 +155,11 @@ export default class StackContainer extends PanelBase
         let ranges = [];
         if (this.element.closest('body')) {
             const windowRange = this._lastTargetRange;
-            ranges = this.children.map(e => e.element.getClientRects()?.[0]?.[this.opts.direction === 'vertical'? 'height': 'width'] || e.opts?.defaultSize[this.opts.direction === 'vertical'? 'y': 'x'] || 100);
+            ranges = this.children.map(e => e.element.getClientRects()?.[0]?.[this.opts.direction === 'vertical'? 'height': 'width'] ?? e.opts?.defaultSize[this.opts.direction === 'vertical'? 'y': 'x'] ?? 100);
 
             if (this._lastref) {
                 const idx = this.children.map(e => e.element).indexOf(this._lastref.previousElementSibling);
-                const insertTargetRange = ((ranges[idx] || 0) + (ranges[idx + 1] || 0)) / 2;
+                const insertTargetRange = ((ranges[idx] ?? 0) + (ranges[idx + 1] ?? 0)) / 2;
                 const insertRange = Math.min(insertTargetRange, windowRange) - this.opts.separatorWidth;
                 if (~idx && ranges[idx + 1]) {
                     const [smallIdx, largeIdx] = ranges[idx] > ranges[idx + 1]? [idx + 1, idx]: [idx, idx + 1];
@@ -253,7 +253,7 @@ export default class StackContainer extends PanelBase
 
     _calcGridSize (sep, pos, template) {
         const target = this.opts.direction === 'vertical'? 'gridTemplateRows': 'gridTemplateColumns';
-        const currentSizes = template || this.inner.style[target].split(' ').filter(e => e !== '').filter((_e, i) => i % 2 !== 0);
+        const currentSizes = template ?? this.inner.style[target].split(' ').filter(e => e !== '').filter((_e, i) => i % 2 !== 0);
         if (this.children.length === 0) {
             this.inner.style[target] = '';
             return;
@@ -310,6 +310,12 @@ export default class StackContainer extends PanelBase
             this._calcGridSize(ev.target, this.opts.direction === 'vertical'? ev.pageY : ev.pageX);
         });
 
+        elem.addEventListener('touchmove', ev => {
+            if (ev.touches[0]?.screenY === 0 || this.opts.reproportionable === false) return;
+
+            this._calcGridSize(ev.target, this.opts.direction === 'vertical'? ev.touches[0].pageY : ev.touches[0].pageX);
+        });
+
         return elem;
     }
 
@@ -318,7 +324,7 @@ export default class StackContainer extends PanelBase
      */
     childMoveHandler (evt) {
         this._lastTargetRange = this.children.map(e => e.element.getClientRects()[0][this.opts.direction === 'vertical'? 'height': 'width']);
-        evt.detail.target.normal((evt.detail.ev.pageX || evt.detail.ev.touches[0].pageX));
+        evt.detail.target.normal((evt.detail.ev.pageX ?? evt.detail.ev.touches[0].pageX));
         evt.detail.target.parent = this.root;
     }
 
