@@ -6,6 +6,7 @@
     "main": "index.js",
     "scripts": {
         "build:js-dev": "webpack --mode development",
+        "build:js-demo": "webpack --env mode=demo",
         "lint": "xo",
         "test": "c8 -r html ava --verbose",
         "test:cui": "c8 ava --verbose"
