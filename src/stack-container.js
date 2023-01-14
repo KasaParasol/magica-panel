@@ -65,8 +65,8 @@ export default class StackContainer extends PanelBase
         this._movehandler = evt => {
             if (evt.detail.target.opts.modal !== 'modaless') return;
 
-            const mouseY = this.root.element.scrollTop + evt.detail.ev.pageY;
-            const mouseX = this.root.element.scrollLeft + evt.detail.ev.pageX;
+            const mouseY = this.root.element.scrollTop + (evt.detail.ev.pageY || evt.detail.ev.touches[0].pageY);
+            const mouseX = this.root.element.scrollLeft + (evt.detail.ev.pageX || evt.detail.ev.touches[0].pageX);
             const elemRect = this.element.getClientRects()[0];
             if (elemRect.top < mouseY && mouseY < elemRect.bottom
             && elemRect.left < mouseX && mouseX < elemRect.right
@@ -79,8 +79,8 @@ export default class StackContainer extends PanelBase
 
             for (const addarea of this.addareas) {
                 const rect = addarea.getClientRects()[0];
-                if (rect && rect.top < evt.detail.ev.clientY && evt.detail.ev.clientY < rect.bottom
-                && rect.left < evt.detail.ev.clientX && evt.detail.ev.clientX < rect.right) {
+                if (rect && rect.top < mouseY && mouseY < rect.bottom
+                && rect.left < mouseX && mouseX < rect.right) {
                     addarea.classList.add('hover');
                 }
                 else {
@@ -92,8 +92,8 @@ export default class StackContainer extends PanelBase
         this._movedhandler = evt => {
             if (evt.detail.target.opts.modal !== 'modaless') return;
 
-            const mouseY = this.root.element.scrollTop + evt.detail.ev.pageY;
-            const mouseX = this.root.element.scrollLeft + evt.detail.ev.pageX;
+            const mouseY = this.root.element.scrollTop + (evt.detail.ev.pageY || evt.detail.ev.touches[0].pageY);
+            const mouseX = this.root.element.scrollLeft + (evt.detail.ev.pageX || evt.detail.ev.touches[0].pageX);
             const elemRect = this.element.getClientRects()[0];
             if (elemRect.top < mouseY && mouseY < elemRect.bottom
             && elemRect.left < mouseX && mouseX < elemRect.right
@@ -107,8 +107,8 @@ export default class StackContainer extends PanelBase
                     }
 
                     const rect = addarea.getClientRects()[0];
-                    if (rect && rect.top < evt.detail.ev.clientY && evt.detail.ev.clientY < rect.bottom
-                    && rect.left < evt.detail.ev.clientX && evt.detail.ev.clientX < rect.right) {
+                    if (rect && rect.top < mouseY && mouseY < rect.bottom
+                    && rect.left < mouseX && mouseX < rect.right) {
                         this._lastref = this.element.contains(addarea.closest('.magica-panel-stack-inner'))? addarea.parentElement: undefined;
                         this._lastTargetRange = evt.detail.target.element.getClientRects()[0][this.opts.direction === 'vertical'? 'height': 'width'];
                         evt.detail.target.parent = this;
@@ -318,7 +318,7 @@ export default class StackContainer extends PanelBase
      */
     childMoveHandler (evt) {
         this._lastTargetRange = this.children.map(e => e.element.getClientRects()[0][this.opts.direction === 'vertical'? 'height': 'width']);
-        evt.detail.target.normal(evt.detail.ev.pageX);
+        evt.detail.target.normal((evt.detail.ev.pageX || evt.detail.ev.touches[0].pageX));
         evt.detail.target.parent = this.root;
     }
 
