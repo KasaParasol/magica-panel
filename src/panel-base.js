@@ -34,29 +34,23 @@ import Value from './values.js';
  */
 
 /**
- * @typedef  TabOptions
- *
- * @property { '' }
- */
-
-/**
  * @typedef  StackContainerOptions
  *
- * @property { 'stack' }                                type                パネル種別
- * @property { 'vertical' | 'horizontal' | TabOptions } direction           分割方向
- * @property { string[] }                               template            コレクション各要素の初期サイズ
- * @property { boolean }                                reproportionable    コレクションの比率を操作できるか
- * @property { boolean }                                dockable            コレクションの脱着操作ができるか(ユーザ操作から)
- * @property { number }                                 separatorWidth      分割境界線の幅(1～)
- * @property { string }                                 additionalClassName パネルに追加で付けるクラス名
- * @property { string | HTMLElement }                   panelAddArea        スタック内が空のときに表示されるパネル追加アイコン
- * @property { any[] }                                  attributes          任意に指定できる属性
+ * @property { 'stack' }                    type                パネル種別
+ * @property { 'vertical' | 'horizontal'  } direction           分割方向
+ * @property { string[] }                   template            コレクション各要素の初期サイズ
+ * @property { boolean }                    reproportionable    コレクションの比率を操作できるか
+ * @property { boolean }                    dockable            コレクションの脱着操作ができるか(ユーザ操作から)
+ * @property { number }                     separatorWidth      分割境界線の幅(1～)
+ * @property { string }                     additionalClassName パネルに追加で付けるクラス名
+ * @property { string | HTMLElement }       panelAddArea        スタック内が空のときに表示されるパネル追加アイコン
+ * @property { any[] }                      attributes          任意に指定できる属性
  */
 
 /**
  * @typedef BaseContainerOptions
  *
- * @property { 'base' }              type                パネル種別
+ * @property { 'base' }              type                 パネル種別
  * @property { 'scroll' | 'hidden' } overflowX            内容コンテンツがX軸に溢れた場合
  * @property { 'scroll' | 'hidden' } overflowY            内容コンテンツがY軸に溢れた場合
  * @property { string[] }            additionalClassNames パネルに追加で付けるクラス名

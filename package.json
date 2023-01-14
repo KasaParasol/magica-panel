@@ -59,7 +59,11 @@
             "unicorn/no-nested-ternary": "off",
             "default-case": "off",
             "guard-for-in": "off",
-            "no-implicit-coercion": "off"
+            "no-implicit-coercion": "off",
+            "unicorn/switch-case-braces": "off",
+            "no-fallthrough": [
+                "warn"
+            ]
         },
         "ignores": [
             "/docs"

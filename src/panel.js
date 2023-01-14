@@ -155,6 +155,10 @@ export default class Panel extends PanelBase
             minimumbutton.classList.add('deny');
             maximumbutton.classList.add('deny');
         }
+
+        this.element.style.left = `${this.opts.position.x}px`;
+        this.element.style.top = `${this.opts.position.y}px`;
+        this.adjustWindowPosition();
     }
 
     _addResizeArea () {
@@ -183,35 +187,35 @@ export default class Panel extends PanelBase
      */
     _resizeAreaHandler (ev) {
         if (ev.type === 'mousedown' || ev.type === 'touchstart') {
-            this._clickstart = {x: ev.pageX || ev.touches[0].pageX, y: ev.pageY || ev.touches[0].pageY};
+            this._clickstart = {x: ev.pageX ?? ev.touches[0].pageX, y: ev.pageY ?? ev.touches[0].pageY};
             this._startrect = this.element.getClientRects()[0];
         }
         else if (ev.type === 'drag'
         || ev.type === 'touchmove') {
-            if (ev.screenY === 0) return;
+            if (ev.screenY ?? ev.touches?.[0]?.screenY === 0) return;
 
             if (ev.target.classList.contains('top')) {
-                let height = this._startrect.height + this._clickstart.y - (ev.pageY || ev.touches[0].pageY) - 10;
-                height = height <= this.opts.minSize.y? this.opts.minSize.y: height >= (this.opts.maxSize?.y || Infinity)? this.opts.maxSize.y: height;
+                let height = this._startrect.height + this._clickstart.y - (ev.pageY ?? ev.touches[0].pageY) - 10;
+                height = height <= this.opts.minSize.y? this.opts.minSize.y: height >= (this.opts.maxSize?.y ?? Infinity)? this.opts.maxSize.y: height;
                 this.element.style.top = `${this.parent.element.scrollTop + this._startrect.bottom - height - this.titlebar.clientHeight}px`;
                 this.inner.style.height = `${height}px`;
             }
 
             if (ev.target.classList.contains('bottom')) {
-                const height = this._startrect.height + (ev.pageY || ev.touches[0].pageY) - this._clickstart.y - 10;
-                this.inner.style.height = `${height <= this.opts.minSize.y? this.opts.minSize.y: height >= (this.opts.maxSize?.y || Infinity)? this.opts.maxSize.y: height}px`;
+                const height = this._startrect.height + (ev.pageY ?? ev.touches[0].pageY) - this._clickstart.y - 10;
+                this.inner.style.height = `${height <= this.opts.minSize.y? this.opts.minSize.y: height >= (this.opts.maxSize?.y ?? Infinity)? this.opts.maxSize.y: height}px`;
             }
 
             if (ev.target.classList.contains('left')) {
-                let width = this._startrect.width + this._clickstart.x - (ev.pageX || ev.touches[0].pageX) - 10;
-                width = width <= this.opts.minSize.x? this.opts.minSize.x: width >= (this.opts.maxSize?.x || Infinity)? this.opts.maxSize.x: width;
+                let width = this._startrect.width + this._clickstart.x - (ev.pageX ?? ev.touches[0].pageX) - 10;
+                width = width <= this.opts.minSize.x? this.opts.minSize.x: width >= (this.opts.maxSize?.x ?? Infinity)? this.opts.maxSize.x: width;
                 this.element.style.left = `${this.parent.element.scrollLeft + this._startrect.right - width}px`;
                 this.inner.style.width = `${width}px`;
             }
 
             if (ev.target.classList.contains('right')) {
-                const width = this._startrect.width + (ev.pageX || ev.touches[0].pageX) - this._clickstart.x - 10;
-                this.inner.style.width = `${width <= this.opts.minSize.x? this.opts.minSize.x: width >= (this.opts.maxSize?.x || Infinity)? this.opts.maxSize.x: width}px`;
+                const width = this._startrect.width + (ev.pageX ?? ev.touches[0].pageX) - this._clickstart.x - 10;
+                this.inner.style.width = `${width <= this.opts.minSize.x? this.opts.minSize.x: width >= (this.opts.maxSize?.x ?? Infinity)? this.opts.maxSize.x: width}px`;
             }
 
             this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: {target: this}}));
@@ -231,22 +235,28 @@ export default class Panel extends PanelBase
             case 'touchstart':
             case 'mousedown': {
                 const rect = ev.target.getClientRects()[0];
-                this._clickstart = {x: ev.offsetX || (ev.touches[0].pageX - rect.left), y: ev.offsetY || (ev.touches[0].pageY - rect.top)};
+                this._clickstart = {x: ev.offsetX ?? (ev.touches[0].pageX - rect.left), y: ev.offsetY ?? (ev.touches[0].pageY - rect.top)};
                 break;
             }
 
-            case 'drag':
             case 'touchmove': {
-                if ((ev.screenY || ev.touches[0].screenY) === 0) return;
+                this._latestTouchEv = ev;
+            }
 
-                this.element.style.left = `${(this.parent.element.scrollLeft + (ev.pageX || ev.touches[0].pageX)) - this._clickstart.x}px`;
-                this.element.style.top = `${(this.parent.element.scrollTop + (ev.pageY || ev.touches[0].pageY)) - this._clickstart.y}px`;
+            case 'drag': {
+                if ((ev.screenY ?? ev.touches?.[0]?.screenY) === 0) return;
+
+                this.element.style.left = `${(this.parent.element.scrollLeft + (ev.pageX ?? ev.touches[0].pageX)) - this._clickstart.x}px`;
+                this.element.style.top = `${(this.parent.element.scrollTop + (ev.pageY ?? ev.touches[0].pageY)) - this._clickstart.y}px`;
                 this.dispatchEvent(new PanelBase.CustomEvent('move', {detail: {rect: this.element.getClientRects()[0], ev, target: this}}));
                 break;
             }
 
-            case 'dragend':
             case 'touchend': {
+                ev = this._latestTouchEv;
+            }
+
+            case 'dragend': {
                 this.adjustWindowPosition();
                 this.dispatchEvent(new PanelBase.CustomEvent('moved', {detail: {rect: this.element.getClientRects()[0], ev, target: this}}));
                 break;
@@ -255,7 +265,8 @@ export default class Panel extends PanelBase
     }
 
     adjustWindowPosition () {
-        const currentRect = this.element.getClientRects()[0];
+        const currentRect = this.element.getClientRects()?.[0];
+        if (!currentRect || !this.parent) return;
         if (this.parent.inner.clientHeight > this.element.clientHeight
         && (this.parent.inner.clientHeight) < currentRect.bottom) {
             this.element.style.top = `${this.parent.inner.clientHeight - this.element.clientHeight}px`;
@@ -276,7 +287,7 @@ export default class Panel extends PanelBase
     }
 
     maximum () {
-        this._left = this.element.getClientRects()[0]?.left || 0;
+        this._left = this.element.getClientRects()[0]?.left ?? 0;
         this.element.classList.remove('minimum');
         this.element.classList.add('maximum');
         this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: {target: this}}));
@@ -309,7 +320,7 @@ export default class Panel extends PanelBase
     }
 
     minimum () {
-        this._left = this.element.getClientRects()[0]?.left || 0;
+        this._left = this.element.getClientRects()[0]?.left ?? 0;
         this.element.classList.remove('maximum');
         this.element.classList.add('minimum');
         this.dispatchEvent(new PanelBase.CustomEvent('minimized', {detail: {target: this}}));
