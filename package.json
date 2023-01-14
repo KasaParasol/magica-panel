@@ -6,9 +6,10 @@
     "main": "index.js",
     "scripts": {
         "build:js-dev": "webpack --mode development",
+        "build:js-demo": "webpack --env mode=demo",
         "lint": "xo",
         "test": "c8 -r html ava --verbose",
-        "test:ci": "c8 ava --verbose"
+        "test:cui": "c8 ava --verbose"
     },
     "author": "KasaParasol",
     "license": "MIT",
@@ -61,7 +62,7 @@
             "no-implicit-coercion": "off"
         },
         "ignores": [
-            "webpack.config.js"
+            "/demo"
         ]
     }
 }

@@ -40,25 +40,24 @@ export default class BaseContainer extends PanelBase
      */
     _setResizeEvemt (elem) {
         this._elemrect = {x: elem.clientWidth, y: elem.clientHeight};
+        const dispatcher = () => {
+            if (elem.clientWidth !== this._elemrect.x
+            || elem.clientHeight !== this._elemrect.y) {
+                this._elemrect = {x: elem.clientWidth, y: elem.clientHeight};
+                this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: this._elemrect}));
+            }
+        };
+
         if (PanelBase.window.ResizeObserver) {
-            const ro = new ResizeObserver(() => {
-                if (elem.clientWidth !== this._elemrect.x
-                || elem.clientHeight !== this._element.y) {
-                    this._elemrect = {x: elem.clientWidth, y: elem.clientHeight};
-                    this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: this._elemrect}));
-                }
+            const ro = new PanelBase.window.ResizeObserver(() => {
+                dispatcher();
             });
             ro.observe(elem);
         }
         else {
             const f = () => {
                 PanelBase.window.requestAnimationFrame(() => {
-                    if (elem.clientWidth !== this._elemrect.x
-                    || elem.clientHeight !== this._element.y) {
-                        this._elemrect = {x: elem.clientWidth, y: elem.clientHeight};
-                        this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: this._elemrect}));
-                    }
-
+                    dispatcher();
                     f();
                 });
             };
@@ -115,17 +114,17 @@ export default class BaseContainer extends PanelBase
         this.dispatchEvent(new PanelBase.CustomEvent('childrenmoved', {detail: {...evt.detail, target: evt.target}}));
     }
 
-    childMinimizedHandler (evt) {
+    childMinimizedHandler () {
         // eslint-disable-next-line unicorn/no-array-for-each
         this.children.filter(e => e.element.classList.contains('minimum')).forEach((value, counter) => {
-            value.element.style.left = `${evt.target.element.getClientRects()[0].width * counter}px`;
+            value.element.style.left = `${value.element.getClientRects()[0].width * counter}px`;
         });
     }
 
-    childNormalizedHandler (evt) {
+    childNormalizedHandler () {
         // eslint-disable-next-line unicorn/no-array-for-each
         this.children.filter(e => e.element.classList.contains('minimum')).forEach((value, counter) => {
-            value.element.style.left = `${evt.target.element.getClientRects()[0].width * counter}px`;
+            value.element.style.left = `${value.element.getClientRects()[0].width * counter}px`;
         });
     }
 }

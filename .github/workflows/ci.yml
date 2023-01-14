@@ -24,7 +24,29 @@ jobs:
       - name: Upgrade npm
         run: npm install --global npm@^8.18
       - run: npm install --no-audit
-      - run: npm run test:ci
+      - run: npm run test
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: coverage/
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: ^18
+          cache: npm
+      - name: Upgrade npm
+        run: npm install --global npm@^8.18
+      - run: npm install --no-audit
+      - run: npm run build:js-dev
 
   xo:
     name: Lint

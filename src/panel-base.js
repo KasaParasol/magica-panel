@@ -272,9 +272,13 @@ try {
     PanelBase.window = window;
     PanelBase.document = document;
     PanelBase.CustomEvent = CustomEvent;
+    PanelBase.HTMLElement = HTMLElement;
+    PanelBase.Image = Image;
 }
 catch {
     PanelBase.window = undefined;
     PanelBase.document = undefined;
     PanelBase.CustomEvent = undefined;
+    PanelBase.HTMLElement = undefined;
+    PanelBase.Image = undefined;
 }

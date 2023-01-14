@@ -1,9 +1,9 @@
 const path = require('node:path');
 
-module.exports = {
+module.exports = env => ({
     entry: './src/index.js',
     output: {
-        path: path.resolve('./dist'),
+        path: env.mode === 'demo' ? path.resolve('./demo') : path.resolve('./dist'),
         filename: 'main.js',
         library: {
             name: 'MagicaPanel',
@@ -13,4 +13,4 @@ module.exports = {
     },
     mode: 'development',
     devtool: 'inline-source-map',
-};
+});
