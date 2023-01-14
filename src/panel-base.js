@@ -114,6 +114,7 @@ export default class PanelBase extends EventTarget
         this._inner = PanelBase.document.createElement('div');
         this._element.append(this._inner);
         this._element.addEventListener('mousedown', () => this.active());
+        this._element.addEventListener('touchstart', () => this.active());
 
         this._children = [];
         for (const child of children) if (child instanceof PanelBase) {
