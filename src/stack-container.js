@@ -270,13 +270,36 @@ export default class StackContainer extends PanelBase
             const prevRect = sep.previousElementSibling.getClientRects()[0];
             const nextRect = sep.nextElementSibling.getClientRects()[0];
 
-            if (this.opts.direction === 'vertical') {
-                currentSizes[prevIdx] = `${pos - prevRect.top - 1}px`;
-                currentSizes[nextIdx] = `${nextRect.bottom - pos - 1}px`;
+            let prevRange = pos - (this.opts.direction === 'vertical'? prevRect.top: prevRect.left - this.opts.separatorWidth);
+            let frFlag = false;
+            if (prevRange <= 0 && this.children[prevIdx].opts.minimable) {
+                frFlag = true;
+                currentSizes[prevIdx] = `0px`;
+                currentSizes[nextIdx] = `${nextRect[this.opts.direction === 'vertical'? 'bottom': 'right'] - prevRect[this.opts.direction === 'vertical'? 'top': 'left'] - this.opts.separatorWidth}px`;
             }
-            else if (this.opts.direction === 'horizontal') {
-                currentSizes[prevIdx] = `${pos - prevRect.left - 1}px`;
-                currentSizes[nextIdx] = `${nextRect.right - pos - 1}px`;
+            else {
+                prevRange = this.children[prevIdx].opts.minSize[this.opts.direction === 'vertical'? 'y': 'x'] > prevRange ? this.children[prevIdx].opts.minSize[this.opts.direction === 'vertical'? 'y': 'x'] : prevRange;
+            }
+            let nextRange = (this.opts.direction === 'vertical'? nextRect.bottom: nextRect.right) - ((this.opts.direction === 'vertical'? prevRect.top: prevRect.left) + prevRange + this.opts.separatorWidth) - this.opts.separatorWidth;
+            if (nextRange <= 0 && this.children[nextIdx].opts.minimable && !frFlag) {
+                frFlag = true;
+                currentSizes[prevIdx] = `${nextRect[this.opts.direction === 'vertical'? 'bottom': 'right'] - prevRect[this.opts.direction === 'vertical'? 'top': 'left']  - this.opts.separatorWidth}px`;
+                currentSizes[nextIdx] = `0px`;
+            }
+            else {
+                nextRange = this.children[nextIdx].opts.minSize[this.opts.direction === 'vertical'? 'y': 'x'] > nextRange ? this.children[nextIdx].opts.minSize[this.opts.direction === 'vertical'? 'y': 'x'] : nextRange;
+                prevRange = nextRect[this.opts.direction === 'vertical'? 'bottom': 'right'] - prevRect[this.opts.direction === 'vertical'? 'top': 'left'] - nextRange - this.opts.separatorWidth;
+            }
+
+            if (!frFlag) {
+                if (this.opts.direction === 'vertical') {
+                    currentSizes[prevIdx] = `${prevRange}px`;
+                    currentSizes[nextIdx] = `${nextRange}px`;
+                }
+                else if (this.opts.direction === 'horizontal') {
+                    currentSizes[prevIdx] = `${prevRange}px`;
+                    currentSizes[nextIdx] = `${nextRange}px`;
+                }
             }
         }
 
