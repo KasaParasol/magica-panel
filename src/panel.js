@@ -192,7 +192,7 @@ export default class Panel extends PanelBase
         }
         else if (ev.type === 'drag'
         || ev.type === 'touchmove') {
-            if (ev.screenY ?? ev.touches?.[0]?.screenY === 0) return;
+            if ((ev.screenY ?? ev.touches?.[0]?.screenY) === 0) return;
 
             if (ev.target.classList.contains('top')) {
                 let height = this._startrect.height + this._clickstart.y - (ev.pageY ?? ev.touches[0].pageY) - 10;
