@@ -158,7 +158,13 @@ export default class PanelBase extends EventTarget
     static appendStyleElements () {
         const style = PanelBase.document.createElement('style');
         style.textContent = Value.style;
-        PanelBase.document.head.append(style);
+        const ref = PanelBase.document.querySelector('style, link[rel="stylesheet"]');
+        if (ref) {
+            PanelBase.document.head.insertBefore(style, ref);
+        }
+        else {
+            PanelBase.document.head.append(style);
+        }
     }
 
     get parent () {
