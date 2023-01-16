@@ -274,17 +274,18 @@ export default class StackContainer extends PanelBase
             let frFlag = false;
             if (prevRange <= 0 && this.children[prevIdx].opts.minimable) {
                 frFlag = true;
-                currentSizes[prevIdx] = `0px`;
+                currentSizes[prevIdx] = '0px';
                 currentSizes[nextIdx] = `${nextRect[this.opts.direction === 'vertical'? 'bottom': 'right'] - prevRect[this.opts.direction === 'vertical'? 'top': 'left'] - this.opts.separatorWidth}px`;
             }
             else {
                 prevRange = this.children[prevIdx].opts.minSize[this.opts.direction === 'vertical'? 'y': 'x'] > prevRange ? this.children[prevIdx].opts.minSize[this.opts.direction === 'vertical'? 'y': 'x'] : prevRange;
             }
+
             let nextRange = (this.opts.direction === 'vertical'? nextRect.bottom: nextRect.right) - ((this.opts.direction === 'vertical'? prevRect.top: prevRect.left) + prevRange + this.opts.separatorWidth) - this.opts.separatorWidth;
             if (nextRange <= 0 && this.children[nextIdx].opts.minimable && !frFlag) {
                 frFlag = true;
-                currentSizes[prevIdx] = `${nextRect[this.opts.direction === 'vertical'? 'bottom': 'right'] - prevRect[this.opts.direction === 'vertical'? 'top': 'left']  - this.opts.separatorWidth}px`;
-                currentSizes[nextIdx] = `0px`;
+                currentSizes[prevIdx] = `${nextRect[this.opts.direction === 'vertical'? 'bottom': 'right'] - prevRect[this.opts.direction === 'vertical'? 'top': 'left'] - this.opts.separatorWidth}px`;
+                currentSizes[nextIdx] = '0px';
             }
             else {
                 nextRange = this.children[nextIdx].opts.minSize[this.opts.direction === 'vertical'? 'y': 'x'] > nextRange ? this.children[nextIdx].opts.minSize[this.opts.direction === 'vertical'? 'y': 'x'] : nextRange;
