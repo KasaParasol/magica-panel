@@ -44,6 +44,7 @@ import Value from './values.js';
  * @property { number }                     separatorWidth      分割境界線の幅(1～)
  * @property { string }                     additionalClassName パネルに追加で付けるクラス名
  * @property { string | HTMLElement }       panelAddArea        スタック内が空のときに表示されるパネル追加アイコン
+ * @property { boolean }                    adjustSize          親要素リサイズ時やコレクションの増減時に自動的に各コレクションをリサイズするか
  * @property { any[] }                      attributes          任意に指定できる属性
  */
 

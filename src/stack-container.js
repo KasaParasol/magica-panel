@@ -18,6 +18,7 @@ export default class StackContainer extends PanelBase
         attributes: [],
         template: undefined,
         panelAddArea: undefined,
+        adjustSize: true,
     };
 
     /**
@@ -28,6 +29,10 @@ export default class StackContainer extends PanelBase
      */
     constructor (opts = StackContainer.DEFAULT_OPTIONS, ...children) {
         super(PanelBase.document.createElement('div'), Object.assign(opts, StackContainer.DEFAULT_OPTIONS, {...opts}), ...children);
+
+        if (this.opts.adjustSize === false) {
+            this.opts.reproportionable = false;
+        }
 
         this._calcGridSize(undefined, undefined, this.opts.template);
         this.element.classList.add('magica-panel-stack-wrapper');
@@ -194,7 +199,7 @@ export default class StackContainer extends PanelBase
         }
 
         this.element.classList.remove('empty');
-        if (this.element.closest('body')) {
+        if (this.element.closest('body') && this.opts.adjustSize) {
             this._calcGridSize(undefined, undefined, ranges.length === 0? undefined: ranges);
         }
     }
@@ -210,7 +215,7 @@ export default class StackContainer extends PanelBase
         ranges.pop();
         ranges.push(currentWidth - ranges.reduce((a, c) => a + c, 0));
         ranges = ranges.map(e => `${e}px`);
-        if (ranges.length > 0) {
+        if (ranges.length > 0 && this.opts.adjustSize) {
             this._calcGridSize(undefined, undefined, ranges);
         }
 
@@ -248,7 +253,9 @@ export default class StackContainer extends PanelBase
             this.element.classList.add('empty');
         }
 
-        this._calcGridSize(undefined, undefined, ranges?.length === 0? undefined: ranges);
+        if (this.opts.adjustSize) {
+            this._calcGridSize(undefined, undefined, ranges?.length === 0? undefined: ranges);
+        }
     }
 
     _calcGridSize (sep, pos, template) {
