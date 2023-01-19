@@ -54,7 +54,7 @@ MagicaPanelが提供する各クラスは以下のコンストラクタ引数を
 ドキュメント
 ---
 
-### クラス###
+### クラス ###
 
 - `Panel`: ウィンドウとしての表示やスタックコンテナの要素として利用できます。子要素には`HTMLElement`または`StackContainer`を1つのみ格納できます。
     - コンストラクタ引数
@@ -67,7 +67,7 @@ MagicaPanelが提供する各クラスは以下のコンストラクタ引数を
 - `BaseContainer`: `Panel`や`StackContainer`を格納する一番親として1つのみ存在します。子要素には複数の`Panel`と、1つのみ`StackContainer`できます。
     - コンストラクタ引数
         - opts: `BaseContainerOptions`
-        - ...children: `[StackContainer, ...Panel]`
+        - ...children: `[StackContainer?, ...Panel]`
 
 ### オプション ###
 
@@ -117,6 +117,7 @@ MagicaPanelが提供する各クラスは以下のコンストラクタ引数を
 | `additionalClassName` | `string`                    | パネルに追加で付けるクラス名 |
 | `panelAddArea`        | `string \| HTMLElement`     | スタック内が空のときに表示されるパネル追加アイコン |
 | `attributes`          | `any[]`                     | 任意に指定できる属性 |
+| `adjustSize`          | `boolean`                   | 
 
 #### `BaseContainerOptions` ####
 
