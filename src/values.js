@@ -262,21 +262,8 @@ const style = `
 .magica-panel-stack-separator {
     background-color: midnightblue;
     color: white;
-}
-
-.magica-panel-stack-separator {
-    background-color: midnightblue;
-    color: white;
     z-index: 100;
     position: relative;
-}
-
-.magica-panel-stack-wrapper.horizontal > .magica-panel-stack-inner > .magica-panel-stack-separator {
-    background: midnightblue;
-}
-
-.magica-panel-stack-wrapper.vertical > .magica-panel-stack-inner > .magica-panel-stack-separator {
-    background: midnightblue;
 }
 
 .magica-panel-stack-separator.empty {
