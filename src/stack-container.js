@@ -28,15 +28,13 @@ export default class StackContainer extends PanelBase
      * @param { (StackContainer | Panel)[] } children 内容コンテンツ
      */
     constructor (opts = StackContainer.DEFAULT_OPTIONS, ...children) {
-        super(PanelBase.document.createElement('div'), Object.assign(opts, StackContainer.DEFAULT_OPTIONS, {...opts}), ...children);
+        super(PanelBase.document.createElement('div'), Object.assign(opts, StackContainer.DEFAULT_OPTIONS, {...opts}), ['magica-panel-stack-wrapper'], ['magica-panel-stack-inner'], ...children);
 
         if (this.opts.adjustSize === false) {
             this.opts.reproportionable = false;
         }
 
         this._calcGridSize(undefined, undefined, this.opts.template);
-        this.element.classList.add('magica-panel-stack-wrapper');
-        this.inner.classList.add('magica-panel-stack-inner');
         if (this.opts.direction === 'vertical') {
             this.element.classList.add('vertical');
         }
@@ -146,6 +144,7 @@ export default class StackContainer extends PanelBase
             this.root.addEventListener('childrenmove', this._movehandler);
             this.root.addEventListener('childrenmoved', this._movedhandler);
             this._root = this.root;
+            this._calcGridSize();
         }
     }
 
@@ -206,6 +205,7 @@ export default class StackContainer extends PanelBase
 
     resizeParentHandler () {
         if (!this.element.closest('body')) return;
+        if (this.parent.opts.type === 'base' || this.parent.fixedsize) this.fixedsize = true;
 
         let ranges = this.children.map(e => e.element.getClientRects()?.[0]?.[this.opts.direction === 'vertical'? 'height': 'width']).filter(e => e !== undefined);
         const total = ranges.reduce((a, c) => a + c, 0);
@@ -259,6 +259,11 @@ export default class StackContainer extends PanelBase
     }
 
     _calcGridSize (sep, pos, template) {
+        if (!this.parent?.fixedsize && this.parent?.opts?.type !== 'base') return;
+        if ((!this.opts.template || this.opts.template?.length === this.children.length) && !this._gridInit) template = this.opts.template;
+
+        this._gridInit = true;
+
         const target = this.opts.direction === 'vertical'? 'gridTemplateRows': 'gridTemplateColumns';
         const currentSizes = template ?? this.inner.style[target].split(' ').filter(e => e !== '').filter((_e, i) => i % 2 !== 0);
         if (this.children.length === 0) {
@@ -317,6 +322,8 @@ export default class StackContainer extends PanelBase
 
         currentSizes.splice(this.children.length);
         this.inner.style[target] = `${this.opts.separatorWidth}px ${currentSizes.join(` ${this.opts.separatorWidth}px `)} ${this.opts.separatorWidth}px`;
+        this.fixedsize = true;
+        this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: {target: this}}));
     }
 
     _generateSeparator () {

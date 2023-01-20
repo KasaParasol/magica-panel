@@ -160,6 +160,7 @@ const style = `
     left: 0 !important;
     width: 100% !important;
     height: 100% !important;
+    overflow: hidden;
 }
 
 .magica-panel-window.maximum .magica-panel-edge {

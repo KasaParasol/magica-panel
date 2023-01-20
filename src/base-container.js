@@ -22,13 +22,11 @@ export default class BaseContainer extends PanelBase
      * @param { (StackContainer | Panel)[] } children  子要素(スタックは先頭1のみ・初回起動時の追加のみ許可)
      */
     constructor (element, opts = BaseContainer.DEFAULT_OPTIONS, ...children) {
-        super(element, Object.assign(opts, BaseContainer.DEFAULT_OPTIONS, {...opts}), ...BaseContainer.sanitizeChildren(children));
+        super(element, Object.assign(opts, BaseContainer.DEFAULT_OPTIONS, {...opts}), ['magica-panel-wrapper'], ['magica-panel-base'], ...BaseContainer.sanitizeChildren(children));
 
-        this.element.classList.add('magica-panel-wrapper');
         if (opts.overflowX === 'scroll') this.element.classList.add('ox-s');
         if (opts.overflowY === 'scroll') this.element.classList.add('oy-s');
 
-        this.inner.className = 'magica-panel-base';
         if (opts.additionalClassNames) this.inner.classList.add(...opts.additionalClassNames);
 
         this._setResizeEvemt(element);
