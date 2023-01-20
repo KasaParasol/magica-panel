@@ -98,7 +98,7 @@ test('constructor › 初期化時に子要素が与えられれば、子要素�
 
     const child1 = new PanelBase(document.querySelector('#content-c'));
     const child2 = new PanelBase(document.querySelector('#content-d'));
-    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'},  [], [], child1, child2);
+    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'}, [], [], child1, child2);
 
     t.is(instance._children.includes(child1), true);
     t.is(instance._children.includes(child2), true);
@@ -172,7 +172,7 @@ test('(get) children › 得られるオブジェクトはメンバの参照で�
     const document = t.context.data.document;
 
     const child = new PanelBase(document.querySelector('#content-e'), {});
-    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'},  [], [], child);
+    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'}, [], [], child);
 
     const children = instance.children;
     t.not(children, instance._children);
@@ -251,7 +251,7 @@ test('(set) parent › 親要素をに変更した際に既存のイベントが
 
     const removeEventListenerLog = [];
     const child = new PanelBase(document.querySelector('#content-e'), {});
-    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'},  [], [], child);
+    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'}, [], [], child);
     const instance2 = new PanelBase(document.querySelector('#content-f'), {test: 'foo'});
 
     const references = [
@@ -297,7 +297,7 @@ test('closeParentHandler › closeを呼び出す', t => {
     const document = t.context.data.document;
 
     const child = new PanelBase(document.querySelector('#content-e'), {});
-    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'},  [], [], child);
+    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'}, [], [], child);
 
     let counter = 0;
     child.close = () => {
@@ -367,7 +367,7 @@ test('remove › 狙った要素のみを削除できる。', t => {
     const child1 = new PanelBase(document.querySelector('#content-f'), {});
     const child2 = new PanelBase(document.querySelector('#content-g'), {});
     const child3 = new PanelBase(document.querySelector('#content-h'), {});
-    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'},  [], [], child1, child2, child3);
+    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'}, [], [], child1, child2, child3);
 
     instance.remove(child2);
 
@@ -433,7 +433,7 @@ test('active › 親要素のmodifyZIndexを呼び出す', t => {
     const document = t.context.data.document;
 
     const child = new PanelBase(document.querySelector('#content-f'), {});
-    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'},  [], [], child);
+    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'}, [], [], child);
 
     let counter = 0;
     instance.modifyZIndex = () => {
@@ -455,7 +455,7 @@ test('modifyZIndex › アクティブとする要素を指定して最前面に
     const child2 = new PanelBase(document.querySelector('#content-g'), {type: 'panel'});
     const child3 = new PanelBase(document.querySelector('#content-h'), {type: 'panel'});
 
-    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'},  [], [], child1, child2, child3);
+    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'}, [], [], child1, child2, child3);
 
     instance.modifyZIndex(child2);
 
@@ -475,7 +475,7 @@ test('modifyZIndex › 最前面に指定するとき、他要素の並び順は
     const child2 = new PanelBase(document.querySelector('#content-g'), {type: 'panel'});
     const child3 = new PanelBase(document.querySelector('#content-h'), {type: 'panel'});
 
-    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'},  [], [], child1, child2, child3);
+    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'}, [], [], child1, child2, child3);
 
     instance.modifyZIndex(child1);
     instance.modifyZIndex(child2);
@@ -496,7 +496,7 @@ test('modifyZIndex › type が panel でないものは除外', t => {
     const child2 = new PanelBase(document.querySelector('#content-g'), {type: 'panel'});
     const child3 = new PanelBase(document.querySelector('#content-h'), {type: 'stack'});
 
-    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'},  [], [], child1, child2, child3);
+    const instance = new PanelBase(document.querySelector('#content-a'), {test: 'foo'}, [], [], child1, child2, child3);
 
     instance.modifyZIndex(child1);
     instance.modifyZIndex(child2);
