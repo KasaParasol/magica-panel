@@ -345,6 +345,7 @@ export default class Panel extends PanelBase
                 this.element.style.top = `calc(50% - ${rect.height / 2}px)`;
             }
         }
+
         super.resizeParentHandler();
     }
 }

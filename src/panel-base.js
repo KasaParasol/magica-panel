@@ -71,7 +71,7 @@ export default class PanelBase extends EventTarget
      * @param { PanelOptions | StackPanelOptions | BaseContainerOptions } opts
      * @param { (PanelBase | HTMLElement)[] } children
      */
-    constructor (element, opts, elementClasses, innerClasses, ...children) {
+    constructor (element, opts, elementClasses = [], innerClasses = [], ...children) {
         super();
 
         this.outer = undefined;
