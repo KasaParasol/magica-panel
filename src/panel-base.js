@@ -71,7 +71,7 @@ export default class PanelBase extends EventTarget
      * @param { PanelOptions | StackPanelOptions | BaseContainerOptions } opts
      * @param { (PanelBase | HTMLElement)[] } children
      */
-    constructor (element, opts, ...children) {
+    constructor (element, opts, elementClasses = [], innerClasses = [], ...children) {
         super();
 
         this.outer = undefined;
@@ -101,12 +101,14 @@ export default class PanelBase extends EventTarget
 
         this._opts = opts;
         this._element = element;
+        this._element.classList.add(...elementClasses);
         // 自身要素を初期化する
         for (const child of Array.from(element.children)) {
             child.remove();
         }
 
         this._inner = PanelBase.document.createElement('div');
+        this._inner.classList.add(...innerClasses);
         this._element.append(this._inner);
         this._element.addEventListener('mousedown', () => this.active());
         this._element.addEventListener('touchstart', () => this.active());
@@ -120,6 +122,8 @@ export default class PanelBase extends EventTarget
          * @type { PanelBase | undefined }
          */
         this._parent = undefined;
+        this.fixedsize = false;
+
         if (!PanelBase._initialized) PanelBase.init();
         PanelBase._initialized = true;
     }
@@ -184,13 +188,14 @@ export default class PanelBase extends EventTarget
             this._parent.append(this);
             this._parent.addEventListener('resize', this._resizeParentHandler);
             this._parent.addEventListener('close', this._closeParentHandler);
-            this.dispatchEvent(new PanelBase.CustomEvent('changeparent', {detail: {target: this}}));
         }
 
         this.changeParentHandler(undefined);
     }
 
     resizeParentHandler () {
+        if (this.element.closest('body') && (this.parent.opts.type === 'base' || this.parent.fixedsize)) this.fixedsize = true;
+        this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: {target: this}}));
     }
 
     closeParentHandler () {
@@ -211,6 +216,7 @@ export default class PanelBase extends EventTarget
 
     changeParentHandler () {
         this.dispatchEvent(new PanelBase.CustomEvent('changeparent', {detail: {target: this}}));
+        this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: {target: this}}));
     }
 
     remove (val) {

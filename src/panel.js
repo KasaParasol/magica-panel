@@ -34,10 +34,8 @@ export default class Panel extends PanelBase
      * @param { HTMLElement | PanelBase } content 内容コンテンツ
      */
     constructor (opts = Panel.DEFAULT_OPTIONS, content) {
-        super(PanelBase.document.createElement('div'), Object.assign(opts, Panel.DEFAULT_OPTIONS, {...opts}), content);
+        super(PanelBase.document.createElement('div'), Object.assign(opts, Panel.DEFAULT_OPTIONS, {...opts}), ['magica-panel-window'], ['magica-panel-inner'], content);
 
-        this.element.classList.add('magica-panel-window');
-        this.inner.className = 'magica-panel-inner';
         if (opts.overflowX === 'scroll') {
             this._inner.classList.add('ox-s');
         }
@@ -331,7 +329,7 @@ export default class Panel extends PanelBase
             this.adjustWindowPosition();
         }
 
-        this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: {target: this}}));
+        super.resizeParentHandler();
     }
 
     changeParentHandler (evt) {
@@ -348,6 +346,6 @@ export default class Panel extends PanelBase
             }
         }
 
-        this.dispatchEvent(new PanelBase.CustomEvent('resize', {detail: {target: this}}));
+        super.resizeParentHandler();
     }
 }
