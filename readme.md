@@ -117,7 +117,7 @@ MagicaPanelが提供する各クラスは以下のコンストラクタ引数を
 | `additionalClassName` | `string`                    | パネルに追加で付けるクラス名 |
 | `panelAddArea`        | `string \| HTMLElement`     | スタック内が空のときに表示されるパネル追加アイコン |
 | `attributes`          | `any[]`                     | 任意に指定できる属性 |
-| `adjustSize`          | `boolean`                   | 
+| `adjustSize`          | `boolean`                   | 自動リサイズするか |
 
 #### `BaseContainerOptions` ####
 
