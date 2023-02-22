@@ -340,6 +340,7 @@ export default class Panel extends PanelBase
                 this.outer.classList.add('magica-panel-modal-blocker');
                 this.element.parentElement.insertBefore(this.outer, this.element);
             }
+
             this.outer.append(this.element);
             const rect = this.element.getClientRects()[0];
             if (rect) {
