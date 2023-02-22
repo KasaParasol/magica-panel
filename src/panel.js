@@ -335,9 +335,11 @@ export default class Panel extends PanelBase
     changeParentHandler (evt) {
         super.changeParentHandler(evt);
         if (this.opts.modal === 'modal') {
-            this.outer = PanelBase.document.createElement('div');
-            this.outer.classList.add('magica-panel-modal-blocker');
-            this.element.parentElement.insertBefore(this.outer, this.element);
+            if (!this.outer) {
+                this.outer = PanelBase.document.createElement('div');
+                this.outer.classList.add('magica-panel-modal-blocker');
+                this.element.parentElement.insertBefore(this.outer, this.element);
+            }
             this.outer.append(this.element);
             const rect = this.element.getClientRects()[0];
             if (rect) {
